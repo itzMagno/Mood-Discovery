@@ -323,14 +323,39 @@
   </div>
 </div>
 
-<footer>discovery pool &middot; 62 tracks &middot; growing</footer>
+<footer>discovery pool &middot; 90 tracks &middot; growing</footer>
 
 <script>
   // ---- SONG DATABASE ----
   // Each song is tagged with moods + genres it fits.
   // Add more entries here as the pool grows — no other code needs to change.
+  // RULE: anything released before 2000 gets genre: ["classics"] instead of
+  // (or in addition to) its stylistic genre — pre-2000 tracks live in their
+  // own "Classics" bucket rather than mixing into modern Pop/Electronic/Indie.
   const SONGS = [
     { title: "Happy", artist: "Pharrell Williams", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=ZbZSe6N_BXs" },
+    { title: "Dance Monkey", artist: "Tones and I", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=q0hyYWKXF0Q" },
+    { title: "Best Part", artist: "Daniel Caesar ft. H.E.R.", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=vBy7FaapGRo" },
+    { title: "Say You Won't Let Go", artist: "James Arthur", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=HuSqN_jxYEg" },
+    { title: "Chandelier", artist: "Sia", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=2vjPBrBU-TM" },
+    { title: "Say So", artist: "Doja Cat", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=pok8H_KF1FA" },
+    { title: "Juice", artist: "Lizzo", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=XaCrQL_8eMY" },
+    { title: "Adore You", artist: "Harry Styles", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=VF-r5TtlT9w" },
+    { title: "Location", artist: "Khalid", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=by3yRdlQvzs" },
+    { title: "Sorry Not Sorry", artist: "Demi Lovato", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=-MsvER1dpjM" },
+    { title: "Nightmare", artist: "Halsey", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=Q_dqfcvTZik" },
+    { title: "Call Me Maybe", artist: "Carly Rae Jepsen", mood: ["nostalgic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=fWNaR-rxAic" },
+    { title: "Let Her Go", artist: "Passenger", mood: ["nostalgic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=RBumgq5yVrA" },
+    { title: "Retrograde", artist: "James Blake", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=6p6PcFFUm5I" },
+    { title: "Open", artist: "Rhye", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=GmAMahUIBI4" },
+    { title: "No Problem", artist: "Chance the Rapper ft. 2 Chainz & Lil Wayne", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=DVkkYlQNmbc" },
+    { title: "Good News", artist: "Mac Miller", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=aIHF7u9Wwiw" },
+    { title: "Lucid Dreams", artist: "Juice WRLD", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=mzB1VGEGcSU" },
+    { title: "HUMBLE.", artist: "Kendrick Lamar", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=tvTRZJ-4EyI" },
+    { title: "Hold On, We're Going Home", artist: "Drake ft. Majid Jordan", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=GxgqpCdOKak" },
+    { title: "DNA.", artist: "Kendrick Lamar", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=NLZRYQMLDW4" },
+    { title: "The World Is Yours", artist: "Nas", mood: ["nostalgic"], genre: ["classics"], url: "https://www.youtube.com/watch?v=e5PnuIRnJW8" },
+    { title: "Feather (ft. Cise Starr & Akin from CYNE)", artist: "Nujabes", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=hQ5x8pHoIPA" },
     { title: "Can't Stop the Feeling!", artist: "Justin Timberlake", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=ru0K8uYEZWw" },
     { title: "Sally, When the Wine Runs Out", artist: "Role Model", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=F1oKhsy8wGw" },
     { title: "Wake Me Up", artist: "Avicii", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=J1pidmOxAMA" },
@@ -355,6 +380,12 @@
     { title: "Down the Line", artist: "Beach Fossils", mood: ["nostalgic"], genre: ["indie"], url: "https://www.youtube.com/watch?v=zdfjCivNxGY" },
     { title: "Near Light", artist: "\u00d3lafur Arnalds", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=0kYc55bXJFI" },
     { title: "Says", artist: "Nils Frahm", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=dIwwjy4slI8" },
+    { title: "gold", artist: "EDEN", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=1ig9_erNMNU" },
+    { title: "Wake Up", artist: "EDEN", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=YthChN1Wq8M" },
+    { title: "Fumes (feat. gnash)", artist: "EDEN", mood: ["nostalgic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=rFrgyKmOUmc" },
+    { title: "rock + roll", artist: "EDEN", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=geZ_5Ri7ANg" },
+    { title: "circles", artist: "EDEN", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=fP8ElyrwtEc" },
+    { title: "drowning.", artist: "The Eden Project", mood: ["nostalgic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=4qkerVUsKgk" },
     { title: "Say My Name", artist: "ODESZA", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=QMssNXBCCl0" },
     { title: "Kerala", artist: "Bonobo", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=S0Q4gqBUs7c" },
     { title: "Someone Like You", artist: "Adele", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=He2XpqNliFM" },
@@ -408,6 +439,8 @@
     { id: "pop", label: "Pop", emoji: "\uD83C\uDFA4" },
     { id: "electronic", label: "Electronic", emoji: "\uD83C\uDFA7" },
     { id: "indie", label: "Indie", emoji: "\uD83C\uDFB8" },
+    { id: "hiphop", label: "Hip-Hop", emoji: "\uD83C\uDFA4" },
+    { id: "classics", label: "Classics", emoji: "\uD83D\uDCFB" },
   ];
 
   let chosenMood = null;
