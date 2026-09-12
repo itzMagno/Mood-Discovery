@@ -111,6 +111,32 @@
     margin: 0 0 8px;
   }
 
+  .quote {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin: 0 0 24px;
+  }
+
+  .quote-author {
+    font-family: 'Space Grotesk', sans-serif;
+    font-style: normal;
+    font-size: 13px;
+    opacity: 0.8;
+  }
+
+  .corner-note {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    z-index: 2;
+  }
+
   h1 {
     font-family: 'Fraunces', serif;
     font-weight: 500;
@@ -425,6 +451,7 @@
 <div class="screen active" id="step-welcome">
   <p class="kicker">You found it</p>
   <h1 id="welcome-heading">Hey, welcome.</h1>
+  <p class="quote" id="welcome-quote"></p>
 
   <div id="name-capture">
     <p>What should I call you?</p>
@@ -435,7 +462,7 @@
     </div>
   </div>
 
-  <p id="returning-note" style="display:none;"></p>
+  <p id="returning-note" class="corner-note" style="display:none;"></p>
 
   <p>This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
   <p>Got a song you think should be in here? Drop it below and it'll come straight to me.</p>
@@ -982,7 +1009,57 @@
     return name ? `, ${name}` : '';
   }
 
+  const QUOTES = [
+    { text: "Where words fail, music speaks.", author: "Hans Christian Andersen" },
+    { text: "Without music, life would be a mistake.", author: "Friedrich Nietzsche" },
+    { text: "Music is the shorthand of emotion.", author: "Leo Tolstoy" },
+    { text: "One good thing about music: when it hits you, you feel no pain.", author: "Bob Marley" },
+    { text: "Music can name the unnameable and communicate the unknowable.", author: "Leonard Bernstein" },
+    { text: "Music is the universal language of mankind.", author: "Henry Wadsworth Longfellow" },
+    { text: "Music gives a soul to the universe, wings to the mind.", author: "Plato" },
+    { text: "He who sings frightens away his ills.", author: "Miguel de Cervantes" },
+    { text: "Music is the emotional life of most people.", author: "Leonard Cohen" },
+    { text: "If you were music, I would listen to you ceaselessly.", author: "Anna Akhmatova" },
+    { text: "Most people die with their music still locked up inside them.", author: "Benjamin Disraeli" },
+    { text: "Philosophy is the highest music.", author: "Plato" },
+    { text: "Music, my rampart and my only one.", author: "Edna St. Vincent Millay" },
+    { text: "Who hears music feels his solitude peopled at once.", author: "Robert Browning" },
+    { text: "Music is my religion.", author: "Jimi Hendrix" },
+    { text: "Music is well said to be the speech of angels.", author: "Thomas Carlyle" },
+    { text: "There is no truer truth obtainable by man than comes of music.", author: "Robert Browning" },
+    { text: "Where words leave off, music begins.", author: "Heinrich Heine" },
+    { text: "Music produces a kind of pleasure human nature cannot do without.", author: "Confucius" },
+    { text: "The world's most famous and popular language is music.", author: "Psy" },
+    { text: "My ambition was to live like music.", author: "Mary Gaitskill" },
+    { text: "To stop the flow of music would be like stopping time itself.", author: "Aaron Copland" },
+    { text: "Music can change the world because it can change people.", author: "Bono" },
+    { text: "Music washes away from the soul the dust of everyday life.", author: "Berthold Auerbach" },
+    { text: "If music be the food of love, play on.", author: "William Shakespeare" },
+    { text: "Music is the wine that fills the cup of silence.", author: "Robert Fripp" },
+    { text: "A jazz musician is a juggler who uses harmonies instead of oranges.", author: "Benny Green" },
+    { text: "After silence, that which comes nearest to expressing the inexpressible is music.", author: "Aldous Huxley" },
+    { text: "Music is the divine way to tell beautiful things to the heart.", author: "Pablo Casals" },
+    { text: "Without deviation from the norm, progress is not possible.", author: "Frank Zappa" },
+    { text: "Hell is full of musical amateurs.", author: "George Bernard Shaw" },
+    { text: "There are only two kinds of music: good music, and bad music.", author: "Duke Ellington" },
+    { text: "Nobody cares if you can't dance well. Just get up and dance.", author: "Dave Barry" },
+    { text: "Never give a sword to a man who can't dance.", author: "Confucius" },
+    { text: "Dancing is like dreaming with your feet.", author: "Constanze Mozart" },
+    { text: "The one thing that can solve most of our problems is dancing.", author: "James Brown" },
+    { text: "No one dances sober, unless he is insane.", author: "Cicero" },
+    { text: "There are shortcuts to happiness, and dancing is one of them.", author: "Vicki Baum" },
+    { text: "Dancing is the poetry of the foot.", author: "John Dryden" },
+    { text: "Dance for yourself. If someone understands, good. If not, no matter.", author: "Louis Horst" },
+    { text: "I don't always dance, but when I do, I pretend no one's watching.", author: "Anonymous" },
+    { text: "Talking about music is like dancing about architecture.", author: "Widely quoted, true source disputed" },
+  ];
+
   function initWelcome() {
+    const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    const quoteEl = document.getElementById('welcome-quote');
+    if (quoteEl) {
+      quoteEl.innerHTML = `\u201c${quote.text}\u201d <span class="quote-author">\u2014 ${quote.author}</span>`;
+    }
     const name = getVisitorName();
     const heading = document.getElementById('welcome-heading');
     const capture = document.getElementById('name-capture');
