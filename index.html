@@ -270,6 +270,59 @@
     cursor: pointer;
   }
 
+  .suggest-box {
+    margin-bottom: 20px;
+  }
+
+  .suggest-input {
+    display: block;
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid #29293580;
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .suggest-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .suggest-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .suggest-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--surface-raised);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #29293580;
+    cursor: pointer;
+    margin-bottom: 4px;
+  }
+
+  .suggest-btn:active {
+    transform: scale(0.98);
+  }
+
+  .suggest-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    min-height: 18px;
+    margin: 6px 0 0;
+  }
+
   .again-btn {
     display: block;
     width: 100%;
@@ -293,10 +346,36 @@
 </head>
 <body>
 
-<!-- STEP 1: MOOD -->
-<div class="screen active" id="step-mood">
+<!-- STEP -1: WELCOME -->
+<div class="screen active" id="step-welcome">
+  <p class="kicker">You found it</p>
+  <h1>Hey, welcome.</h1>
+  <p>This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
+  <p>Got a song you think should be in here? Drop it below and it'll come straight to me.</p>
+  <div class="suggest-box">
+    <input type="text" id="song-input" class="suggest-input" placeholder="Artist - Song title" />
+    <button class="suggest-btn" onclick="submitSuggestion()">Send suggestion</button>
+    <p class="suggest-note" id="suggest-note"></p>
+  </div>
+  <button class="open-btn" onclick="goTo('step-intent')">Let's go</button>
+</div>
+
+<!-- STEP 0: INTENT -->
+<div class="screen" id="step-intent">
   <p class="kicker">Scan complete</p>
-  <h1>What's the vibe right now?</h1>
+  <h1>What are we picking for?</h1>
+  <div class="grid single">
+    <button class="option" onclick="selectIntent('feel')"><span class="emoji">🎭</span>How are you feeling right now?</button>
+    <button class="option" onclick="selectIntent('want')"><span class="emoji">✨</span>How do you want to feel instead?</button>
+    <button class="option" onclick="showSongOfMoment()"><span class="emoji">🎵</span>Song of the moment</button>
+  </div>
+</div>
+
+<!-- STEP 1: MOOD -->
+<div class="screen" id="step-mood">
+  <button class="back" onclick="goTo('step-intent')">&larr; back</button>
+  <p class="kicker">Scan complete</p>
+  <h1 id="mood-h1">What's the vibe right now?</h1>
   <div class="grid moods" id="mood-grid"></div>
 </div>
 
@@ -319,7 +398,7 @@
     <p class="track" id="found-track"></p>
     <p class="artist" id="found-artist"></p>
     <a class="open-btn" id="open-link" href="#" target="_blank" rel="noopener">Open on YouTube</a>
-    <button class="again-btn" onclick="goTo('step-mood')">Start over</button>
+    <button class="again-btn" onclick="goTo('step-intent')">Start over</button>
   </div>
 </div>
 
@@ -769,10 +848,70 @@
   ];
 
   let chosenMood = null;
+  let chosenIntent = null;
 
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+  }
+
+  // Paste the Google Apps Script Web App URL here once deployed, e.g.:
+  // "https://script.google.com/macros/s/AKfycb.../exec"
+  const SUGGESTION_ENDPOINT = "https://script.google.com/macros/s/AKfycby718Qg_-VBmpW4EzNFMv5-CgqEYOAaXVgcf9S9mHCprvDbt5rwbfO50Y1GlIidyrw7/exec";
+
+  function submitSuggestion() {
+    const input = document.getElementById('song-input');
+    const note = document.getElementById('suggest-note');
+    const song = input.value.trim();
+    if (!song) {
+      note.textContent = "Type a song first \uD83D\uDE42";
+      return;
+    }
+    if (SUGGESTION_ENDPOINT.indexOf('PASTE_YOUR') === 0) {
+      note.textContent = "Suggestions aren't hooked up yet \u2014 coming soon!";
+      return;
+    }
+    note.textContent = "Sending\u2026";
+    fetch(SUGGESTION_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: new URLSearchParams({ song })
+    }).then(() => {
+      note.textContent = "Sent \u2014 thank you!";
+      input.value = '';
+    }).catch(() => {
+      note.textContent = "Something went wrong \u2014 try again?";
+    });
+  }
+
+  function selectIntent(intent) {
+    chosenIntent = intent;
+    document.getElementById('mood-h1').textContent = intent === 'feel'
+      ? "What's the vibe right now?"
+      : "What vibe do you want instead?";
+    goTo('step-mood');
+  }
+
+  function showSongOfMoment() {
+    // Deterministic pick seeded by today's date (UTC days since epoch),
+    // so everyone gets the same track on a given day, and it changes at midnight.
+    const daysSinceEpoch = Math.floor(Date.now() / 86400000);
+    const pick = SONGS[daysSinceEpoch % SONGS.length];
+
+    document.documentElement.style.setProperty('--accent', '#E8899E');
+    document.documentElement.style.setProperty('--accent-dim', '#3D2530');
+
+    goTo('reveal');
+    document.getElementById('found-card').classList.remove('show');
+    document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
+
+    setTimeout(() => {
+      document.getElementById('reveal-title').textContent = "Today's pick";
+      document.getElementById('found-track').textContent = pick.title;
+      document.getElementById('found-artist').textContent = pick.artist;
+      document.getElementById('open-link').href = pick.url;
+      document.getElementById('found-card').classList.add('show');
+    }, 1100);
   }
 
   function renderMoods() {
