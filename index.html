@@ -75,8 +75,9 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(700px circle at var(--mx, 50%) var(--my, 50%), var(--accent) 0%, transparent 60%);
-    opacity: 0.5;
+    background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), var(--accent) 0%, color-mix(in srgb, var(--accent) 35%, transparent) 45%, transparent 75%);
+    filter: blur(25px);
+    opacity: 0.4;
   }
 
   .bg-floaters span {
@@ -125,6 +126,16 @@
     font-style: normal;
     font-size: 13px;
     opacity: 0.8;
+  }
+
+  .tagline {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 16px;
   }
 
   .corner-note {
@@ -465,6 +476,7 @@
   <p id="returning-note" class="corner-note" style="display:none;"></p>
 
   <p>This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
+  <p class="tagline">Discover. Feel. Repeat.</p>
   <p>Got a song you think should be in here? Drop it below and it'll come straight to me.</p>
   <div class="suggest-box">
     <input type="text" id="song-input" class="suggest-input" placeholder="Artist - Song title" />
@@ -1289,8 +1301,8 @@
     function animateGlow() {
       // Ease toward the cursor rather than snapping to it — gives the
       // slow, fluid "moving through water" feel.
-      curX += (targetX - curX) * 0.07;
-      curY += (targetY - curY) * 0.07;
+      curX += (targetX - curX) * 0.025;
+      curY += (targetY - curY) * 0.025;
       document.documentElement.style.setProperty('--mx', curX + 'px');
       document.documentElement.style.setProperty('--my', curY + 'px');
       requestAnimationFrame(animateGlow);
