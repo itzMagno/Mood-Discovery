@@ -62,6 +62,15 @@
     animation: rise 0.5s ease both;
   }
 
+  .center-light {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background: radial-gradient(800px circle at 50% 50%, var(--accent) 0%, transparent 70%);
+    opacity: 0.09;
+  }
+
   .bg-floaters {
     position: fixed;
     inset: 0;
@@ -379,7 +388,7 @@
     background: var(--surface);
     border: 1px solid #29293580;
     border-radius: 16px;
-    padding: 56px 24px 24px;
+    padding: 40px 24px 56px;
     margin-top: 28px;
     width: 100%;
     position: relative;
@@ -504,6 +513,8 @@
 </head>
 <body>
 
+<div class="center-light" aria-hidden="true"></div>
+
 <div class="bg-floaters" aria-hidden="true">
   <span style="left:4%;  font-size:22px; animation-duration:22s; animation-delay:0s;">&#127925;</span>
   <span style="left:16%; font-size:32px; animation-duration:26s; animation-delay:3s;">&#127911;</span>
@@ -596,7 +607,7 @@
   </div>
 </div>
 
-<footer>discovery pool &middot; 412 tracks &middot; growing</footer>
+<footer>discovery pool &middot; 436 tracks &middot; growing</footer>
 
 <script>
   // ---- SONG DATABASE ----
@@ -781,6 +792,30 @@
     { title: "Speechless", artist: "Dan + Shay", mood: ["romantic"], genre: ["country"], url: "https://www.youtube.com/watch?v=7UoP9ABJXGE" },
     { title: "Save Me", artist: "Jelly Roll", mood: ["angry"], genre: ["country"], url: "https://www.youtube.com/watch?v=pXJIFK6t38A" },
     { title: "Something in the Orange", artist: "Zach Bryan", mood: ["focused"], genre: ["country"], url: "https://www.youtube.com/watch?v=lA8F9sIhGdg" },
+    { title: "Beautiful Crazy", artist: "Luke Combs", mood: ["happy"], genre: ["country"], url: "https://www.youtube.com/watch?v=rItv9i6c7AY" },
+    { title: "Wasted On You", artist: "Morgan Wallen", mood: ["chill"], genre: ["country"], url: "https://www.youtube.com/watch?v=OqaznqwGkrs" },
+    { title: "Homesick", artist: "Kane Brown", mood: ["sad"], genre: ["country"], url: "https://www.youtube.com/watch?v=ukHikH_10CA" },
+    { title: "Country Girl (Shake It for Me)", artist: "Luke Bryan", mood: ["hype"], genre: ["country"], url: "https://www.youtube.com/watch?v=7HX4SfnVlP4" },
+    { title: "Bless the Broken Road", artist: "Rascal Flatts", mood: ["romantic"], genre: ["country"], url: "https://www.youtube.com/watch?v=7a47fEuB9vo" },
+    { title: "Redneck Woman", artist: "Gretchen Wilson", mood: ["angry"], genre: ["country"], url: "https://www.youtube.com/watch?v=82dDnv9zeLs" },
+    { title: "Sleeping on the Blacktop", artist: "Colter Wall", mood: ["focused"], genre: ["country"], url: "https://www.youtube.com/watch?v=r7uiVktlD1U" },
+    { title: "Body Like A Back Road", artist: "Sam Hunt", mood: ["gym"], genre: ["country"], url: "https://www.youtube.com/watch?v=Fx-EfjsRcBk" },
+    { title: "Freak Like Me", artist: "Halestorm", mood: ["happy"], genre: ["metal"], url: "https://www.youtube.com/watch?v=4sXoA7B5yJo" },
+    { title: "Send the Pain Below", artist: "Chevelle", mood: ["chill"], genre: ["metal"], url: "https://www.youtube.com/watch?v=gpyRI1j9t6c" },
+    { title: "The Death of Me", artist: "Asking Alexandria", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=Xl1lS6B9pMc" },
+    { title: "The American Nightmare", artist: "Ice Nine Kills", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=JXq2TBAuL8o" },
+    { title: "Might Love Myself", artist: "Beartooth", mood: ["romantic"], genre: ["metal"], url: "https://www.youtube.com/watch?v=83rcK9Xne5A" },
+    { title: "Redneck", artist: "Lamb of God", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=oqdZpxkzNvc" },
+    { title: "Lola Montez", artist: "Volbeat", mood: ["focused"], genre: ["metal"], url: "https://www.youtube.com/watch?v=GWOIDN-akrY" },
+    { title: "Undead", artist: "Hollywood Undead", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=CCVvq4g4Qj0" },
+    { title: "Glow Like Dat", artist: "Rich Brian", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=adDD43CvrUc" },
+    { title: "Hair Down (feat. Kendrick Lamar)", artist: "SiR", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=BQqEMLOOMCo" },
+    { title: "Topanga", artist: "Trippie Redd", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=qE4Z0KfzpE8" },
+    { title: "XO Tour Llif3", artist: "Lil Uzi Vert", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=WrsFXgQk5UI" },
+    { title: "Recognize (feat. Drake)", artist: "PARTYNEXTDOOR", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=WsPfSXJaelk" },
+    { title: "151 Rum", artist: "JID", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=vtY8pM-H65c" },
+    { title: "Doomsday (feat. Pebbles The Invisible Girl)", artist: "MF DOOM", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=LMeluRz2wv4" },
+    { title: "Hustlin'", artist: "Rick Ross", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=JU9TouRnO84" },
     { title: "Passenger (feat. Maynard James Keenan)", artist: "Deftones", mood: ["chill"], genre: ["metal"], url: "https://www.youtube.com/watch?v=IjainiB8mk4" },
     { title: "Come Clarity", artist: "In Flames", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=VKlGT8ZVTfQ" },
     { title: "Tears Don't Fall", artist: "Bullet For My Valentine", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=9sTQ0QdkN3Q" },
