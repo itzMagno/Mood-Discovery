@@ -424,7 +424,19 @@
 <!-- STEP -1: WELCOME -->
 <div class="screen active" id="step-welcome">
   <p class="kicker">You found it</p>
-  <h1>Hey, welcome.</h1>
+  <h1 id="welcome-heading">Hey, welcome.</h1>
+
+  <div id="name-capture">
+    <p>What should I call you?</p>
+    <div class="suggest-box">
+      <input type="text" id="name-input" class="suggest-input" placeholder="Your name" />
+      <button class="suggest-btn" onclick="saveVisitorName()">That's me</button>
+      <p class="suggest-note" id="name-note">Totally optional, and you can <a href="#" onclick="skipName(); return false;" style="color:inherit;">skip it</a>. It'll just say "hey" instead.</p>
+    </div>
+  </div>
+
+  <p id="returning-note" style="display:none;"></p>
+
   <p>This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
   <p>Got a song you think should be in here? Drop it below and it'll come straight to me.</p>
   <div class="suggest-box">
@@ -438,7 +450,7 @@
 <!-- STEP 0: INTENT -->
 <div class="screen" id="step-intent">
   <p class="kicker">Scan complete</p>
-  <h1>What are we picking for?</h1>
+  <h1 id="intent-h1">What are we picking for?</h1>
   <div class="grid single">
     <button class="option" onclick="selectIntent('feel')"><span class="emoji">🎭</span>How are you feeling right now?</button>
     <button class="option" onclick="selectIntent('want')"><span class="emoji">✨</span>How do you want to feel instead?</button>
@@ -959,11 +971,60 @@
     });
   }
 
+  const NAME_KEY = 'moodMachineVisitorName';
+
+  function getVisitorName() {
+    return localStorage.getItem(NAME_KEY) || '';
+  }
+
+  function nameSuffix() {
+    const name = getVisitorName();
+    return name ? `, ${name}` : '';
+  }
+
+  function initWelcome() {
+    const name = getVisitorName();
+    const heading = document.getElementById('welcome-heading');
+    const capture = document.getElementById('name-capture');
+    const note = document.getElementById('returning-note');
+    const intentH1 = document.getElementById('intent-h1');
+
+    if (name) {
+      heading.textContent = `Hey ${name}, welcome back.`;
+      capture.style.display = 'none';
+      note.style.display = 'block';
+      note.innerHTML = `<a href="#" onclick="resetVisitorName(); return false;" style="color:inherit;">Not ${name}? Reset</a>`;
+      intentH1.textContent = `What are we picking for, ${name}?`;
+    } else {
+      heading.textContent = 'Hey, welcome.';
+      capture.style.display = 'block';
+      note.style.display = 'none';
+      intentH1.textContent = 'What are we picking for?';
+    }
+  }
+
+  function saveVisitorName() {
+    const input = document.getElementById('name-input');
+    const name = input.value.trim();
+    if (!name) return;
+    localStorage.setItem(NAME_KEY, name);
+    initWelcome();
+  }
+
+  function skipName() {
+    document.getElementById('name-capture').style.display = 'none';
+  }
+
+  function resetVisitorName() {
+    localStorage.removeItem(NAME_KEY);
+    initWelcome();
+  }
+
   function selectIntent(intent) {
     chosenIntent = intent;
     document.getElementById('mood-h1').textContent = intent === 'feel'
-      ? "What's the vibe right now?"
-      : "What vibe do you want instead?";
+      ? `What's the vibe right now${nameSuffix()}?`
+      : `What vibe do you want instead${nameSuffix()}?`;
     goTo('step-mood');
   }
 
@@ -981,7 +1042,7 @@
     document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
 
     setTimeout(() => {
-      document.getElementById('reveal-title').textContent = "Today's pick";
+      document.getElementById('reveal-title').textContent = `Today's pick${nameSuffix()}`;
       document.getElementById('found-track').textContent = pick.title;
       document.getElementById('found-artist').textContent = pick.artist;
       document.getElementById('open-link').href = pick.url;
@@ -1036,7 +1097,7 @@
     document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
 
     setTimeout(() => {
-      document.getElementById('reveal-title').textContent = "Found one";
+      document.getElementById('reveal-title').textContent = `Found one${nameSuffix()}`;
       document.getElementById('found-track').textContent = pick.title;
       document.getElementById('found-artist').textContent = pick.artist;
       document.getElementById('open-link').href = pick.url;
@@ -1044,6 +1105,7 @@
     }, 1100);
   }
 
+  initWelcome();
   renderMoods();
 
   // Neon proximity glow: intensity grows the closer the pointer gets
