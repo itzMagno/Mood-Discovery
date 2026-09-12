@@ -86,7 +86,7 @@
     font-size: 28px;
     opacity: 0;
     color: var(--accent);
-    filter: blur(0.3px);
+    filter: blur(0.3px) drop-shadow(0 0 6px var(--accent));
     animation-name: floatUp;
     animation-timing-function: ease-in;
     animation-iteration-count: infinite;
@@ -119,6 +119,7 @@
     line-height: 1.5;
     color: var(--text-muted);
     margin: 0 0 24px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   }
 
   .quote-author {
@@ -280,24 +281,49 @@
     text-align: center;
   }
 
-  .disc {
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, var(--surface-raised), var(--ink) 70%);
-    border: 3px solid var(--accent);
-    margin: 0 auto 28px;
+  .reveal-visual {
     position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .disc {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+    margin: 0 auto -55px;
+    background:
+      repeating-radial-gradient(circle at 50% 50%,
+        #1c1c22 0px, #1c1c22 3px,
+        #101014 4px, #101014 7px);
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.55),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.06);
     animation: spin 2.2s linear infinite;
+  }
+
+  .disc::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 48px; height: 48px;
+    background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--accent) 85%, white), var(--accent) 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
   }
 
   .disc::after {
     content: '';
     position: absolute;
     top: 50%; left: 50%;
-    width: 14px; height: 14px;
+    width: 10px; height: 10px;
     background: var(--ink);
-    border: 2px solid var(--accent);
+    border: 2px solid #000;
     border-radius: 50%;
     transform: translate(-50%, -50%);
   }
@@ -321,9 +347,12 @@
     background: var(--surface);
     border: 1px solid #29293580;
     border-radius: 16px;
-    padding: 24px;
+    padding: 72px 24px 24px;
     margin-top: 28px;
     width: 100%;
+    position: relative;
+    z-index: 1;
+    text-align: center;
   }
 
   .found-card.show { display: block; animation: rise 0.4s ease both; }
@@ -454,6 +483,14 @@
   <span style="left:88%; font-size:26px; animation-duration:25s; animation-delay:6s;">&#127911;</span>
   <span style="left:35%; font-size:18px; animation-duration:20s; animation-delay:11s;">&#127929;</span>
   <span style="left:62%; font-size:22px; animation-duration:23s; animation-delay:13s;">&#128191;</span>
+  <span style="left:9%;  font-size:20px; animation-duration:20s; animation-delay:4s;">&#9654;</span>
+  <span style="left:22%; font-size:24px; animation-duration:25s; animation-delay:8s;">&#9208;</span>
+  <span style="left:48%; font-size:22px; animation-duration:22s; animation-delay:14s;">&#9197;</span>
+  <span style="left:73%; font-size:20px; animation-duration:19s; animation-delay:10s;">&#9198;</span>
+  <span style="left:93%; font-size:24px; animation-duration:27s; animation-delay:6s;">&#128256;</span>
+  <span style="left:3%;  font-size:22px; animation-duration:21s; animation-delay:16s;">&#128257;</span>
+  <span style="left:58%; font-size:18px; animation-duration:18s; animation-delay:12s;">&#9654;</span>
+  <span style="left:83%; font-size:22px; animation-duration:24s; animation-delay:3s;">&#9197;</span>
 </div>
 
 <div class="mouse-glow" id="mouse-glow" aria-hidden="true"></div>
@@ -476,13 +513,13 @@
   <p id="returning-note" class="corner-note" style="display:none;"></p>
 
   <p>This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
-  <p class="tagline">Discover. Feel. Repeat.</p>
   <p>Got a song you think should be in here? Drop it below and it'll come straight to me.</p>
   <div class="suggest-box">
     <input type="text" id="song-input" class="suggest-input" placeholder="Artist - Song title" />
     <button class="suggest-btn" onclick="submitSuggestion()">Send suggestion</button>
     <p class="suggest-note" id="suggest-note"></p>
   </div>
+  <p class="tagline">Discover. Feel. Repeat.</p>
   <button class="open-btn" onclick="goTo('step-intent')">Let's go</button>
 </div>
 
@@ -515,16 +552,17 @@
 
 <!-- STEP 3: REVEAL -->
 <div class="screen" id="reveal">
-  <div class="disc"></div>
   <h1 id="reveal-title">Digging through the crates&hellip;</h1>
   <p>One track, picked at random from the pool.</p>
-
-  <div class="found-card" id="found-card">
-    <p class="label">Now playing</p>
-    <p class="track" id="found-track"></p>
-    <p class="artist" id="found-artist"></p>
-    <a class="open-btn" id="open-link" href="#" target="_blank" rel="noopener">Open on YouTube</a>
-    <button class="again-btn" onclick="goTo('step-intent')">Start over</button>
+  <div class="reveal-visual">
+    <div class="disc"></div>
+    <div class="found-card" id="found-card">
+      <p class="label">Now playing</p>
+      <p class="track" id="found-track"></p>
+      <p class="artist" id="found-artist"></p>
+      <a class="open-btn" id="open-link" href="#" target="_blank" rel="noopener">Open on YouTube</a>
+      <button class="again-btn" onclick="goTo('step-intent')">Start over</button>
+    </div>
   </div>
 </div>
 
