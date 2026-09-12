@@ -24,11 +24,14 @@
 
   * { box-sizing: border-box; }
 
+  html {
+    background: var(--ink);
+  }
+
   html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background: var(--ink);
     color: var(--text);
     font-family: 'Space Grotesk', sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -72,10 +75,8 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(900px circle at var(--mx, 50%) var(--my, 50%), var(--accent) 0%, transparent 60%);
-    opacity: 0.4;
-    mix-blend-mode: screen;
-    filter: blur(30px);
+    background: radial-gradient(700px circle at var(--mx, 50%) var(--my, 50%), var(--accent) 0%, transparent 60%);
+    opacity: 0.5;
   }
 
   .bg-floaters span {
