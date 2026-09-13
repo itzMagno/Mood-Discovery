@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>What's the vibe?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0D0D12;
+    --surface: #17171F;
+    --surface-raised: #1F1F29;
+    --text: #F5F3EE;
+    --text-muted: #8A8A96;
+    --happy: #F2B441;
+    --happy-dim: #4A3C1F;
+    --chill: #4FA8B8;
+    --chill-dim: #1E3438;
+    --accent: var(--happy);
+    --accent-dim: var(--happy-dim);
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    background: var(--ink);
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  .screen {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 32px 24px 48px;
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .screen.active {
+    display: flex;
+    animation: rise 0.5s ease both;
+  }
+
+  .center-light {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background: radial-gradient(800px circle at 50% 50%, var(--accent) 0%, transparent 70%);
+    opacity: 0.09;
+  }
+
+  .bg-floaters {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .lens {
+    position: fixed;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    left: var(--mx, 50%);
+    top: var(--my, 50%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      inset 0 0 24px rgba(255, 255, 255, 0.04),
+      0 0 20px rgba(255, 255, 255, 0.03);
+    backdrop-filter: brightness(1.2) contrast(1.08) saturate(1.1);
+    -webkit-backdrop-filter: brightness(1.2) contrast(1.08) saturate(1.1);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .lens.active {
+    opacity: 1;
+  }
+
+  .lens::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 14%;
+    width: 34%;
+    height: 22%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.14), transparent 70%);
+    border-radius: 50%;
+    transform: rotate(-20deg);
+  }
+
+  .bg-floaters span {
+    position: absolute;
+    bottom: -60px;
+    font-size: 28px;
+    opacity: 0;
+    color: var(--accent);
+    filter: blur(var(--focus-blur, 1.2px)) drop-shadow(0 0 6px var(--accent));
+    animation-name: floatUp;
+    animation-timing-function: ease-in;
+    animation-iteration-count: infinite;
+    will-change: transform, opacity, filter;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.4; }
+    50%  { transform: translateY(-55vh) translateX(20px) rotate(180deg); }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-110vh) translateX(-10px) rotate(360deg); opacity: 0; }
+  }
+
+  .bg-floaters .media-icon {
+    color: #FFFFFF;
+    filter: blur(var(--focus-blur, 1.2px)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .kicker {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin: 0 0 8px;
+  }
+
+  .quote {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin: 0 0 24px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .quote-author {
+    font-family: 'Space Grotesk', sans-serif;
+    font-style: normal;
+    font-size: 13px;
+    opacity: 0.8;
+  }
+
+  .tagline {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 16px;
+  }
+
+  .corner-note {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    z-index: 2;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(30px, 8vw, 40px);
+    line-height: 1.15;
+    margin: 0 0 36px;
+    letter-spacing: -0.01em;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .grid.single {
+    grid-template-columns: 1fr;
+  }
+
+  button.option {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid #29293580;
+    border-radius: 14px;
+    padding: 22px 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  button.option::after,
+  .open-btn::after,
+  .suggest-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(64, 210, 255, var(--glow-o, 0)) 0%, transparent 65%);
+  }
+
+  button.option:active {
+    transform: scale(0.97);
+  }
+
+  button.option .emoji {
+    display: block;
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+
+  button.option.happy-tint:hover,
+  button.option.happy-tint:active { border-color: var(--happy); background: var(--happy-dim); }
+
+  button.option.chill-tint:hover,
+  button.option.chill-tint:active { border-color: var(--chill); background: var(--chill-dim); }
+
+  button.option.sad-tint:hover,
+  button.option.sad-tint:active { border-color: #6E8CB0; background: #24303D; }
+
+  button.option.hype-tint:hover,
+  button.option.hype-tint:active { border-color: #E85D4E; background: #3D211C; }
+
+  button.option.romantic-tint:hover,
+  button.option.romantic-tint:active { border-color: #E8899E; background: #3D2530; }
+
+  button.option.angry-tint:hover,
+  button.option.angry-tint:active { border-color: #D64545; background: #3D1E1E; }
+
+  button.option.focused-tint:hover,
+  button.option.focused-tint:active { border-color: #7FA98A; background: #223026; }
+
+  button.option.gym-tint:hover,
+  button.option.gym-tint:active { border-color: #8BC34A; background: #233318; }
+
+  .grid.moods {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .grid.moods button.option {
+    padding: 18px 14px;
+  }
+
+  .grid.moods button.option .emoji {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .back {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    padding: 10px 0;
+    margin-bottom: 18px;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+
+  .mood-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border-radius: 100px;
+    padding: 7px 14px 7px 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    width: fit-content;
+  }
+
+  .mood-pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* Reveal screen */
+  #reveal {
+    align-items: center;
+    text-align: center;
+  }
+
+  .reveal-visual {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .disc {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+    margin: 0 auto -55px;
+    background:
+      linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.22) 46%, transparent 58%),
+      repeating-radial-gradient(circle at 50% 50%,
+        #1c1c22 0px, #1c1c22 3px,
+        #101014 4px, #101014 7px);
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.55),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    animation: spin 2.2s linear infinite;
+  }
+
+  .disc::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 48px; height: 48px;
+    background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--accent) 85%, white), var(--accent) 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+  }
+
+  .disc::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 10px; height: 10px;
+    background: var(--ink);
+    border: 2px solid #000;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  #reveal h1 {
+    margin-bottom: 10px;
+  }
+
+  #reveal p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .found-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid #29293580;
+    border-radius: 16px;
+    padding: 40px 24px 56px;
+    margin-top: 28px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .found-card.show { display: block; animation: rise 0.4s ease both; }
+
+  .found-card .label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .found-card .track {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+
+  .found-card .artist {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin: 0 0 20px;
+  }
+
+  .open-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--accent);
+    color: #100C02;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .suggest-box {
+    margin-bottom: 20px;
+  }
+
+  .suggest-input {
+    display: block;
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid #29293580;
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .suggest-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .suggest-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .suggest-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--surface-raised);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #29293580;
+    cursor: pointer;
+    margin-bottom: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .suggest-btn:active {
+    transform: scale(0.98);
+  }
+
+  .suggest-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    min-height: 18px;
+    margin: 6px 0 0;
+  }
+
+  .again-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: none;
+    color: var(--text-muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    padding: 14px;
+    border: none;
+    cursor: pointer;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: #4A4A54;
+    padding: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="center-light" aria-hidden="true"></div>
+
+<div class="bg-floaters" aria-hidden="true">
+  <span style="left:4%;  font-size:22px; animation-duration:22s; animation-delay:0s;">&#127925;</span>
+  <span style="left:16%; font-size:32px; animation-duration:26s; animation-delay:3s;">&#127911;</span>
+  <span style="left:28%; font-size:20px; animation-duration:19s; animation-delay:7s;">&#127926;</span>
+  <span style="left:42%; font-size:26px; animation-duration:24s; animation-delay:1s;">&#128191;</span>
+  <span style="left:55%; font-size:24px; animation-duration:21s; animation-delay:5s;">&#127929;</span>
+  <span style="left:67%; font-size:30px; animation-duration:28s; animation-delay:9s;">&#127908;</span>
+  <span style="left:78%; font-size:20px; animation-duration:18s; animation-delay:2s;">&#127925;</span>
+  <span style="left:88%; font-size:26px; animation-duration:25s; animation-delay:6s;">&#127911;</span>
+  <span style="left:35%; font-size:18px; animation-duration:20s; animation-delay:11s;">&#127929;</span>
+  <span style="left:62%; font-size:22px; animation-duration:23s; animation-delay:13s;">&#128191;</span>
+  <span style="left:9%;  font-size:22px; animation-duration:20s; animation-delay:4s;" class="media-icon">&#9654;</span>
+  <span style="left:22%; font-size:26px; animation-duration:25s; animation-delay:8s;" class="media-icon">&#9208;</span>
+  <span style="left:48%; font-size:24px; animation-duration:22s; animation-delay:14s;" class="media-icon">&#9197;</span>
+  <span style="left:73%; font-size:22px; animation-duration:19s; animation-delay:10s;" class="media-icon">&#9198;</span>
+  <span style="left:58%; font-size:20px; animation-duration:18s; animation-delay:12s;" class="media-icon">&#9654;</span>
+  <span style="left:83%; font-size:24px; animation-duration:24s; animation-delay:3s;" class="media-icon">&#9197;</span>
+</div>
+
+<div class="lens" id="lens" aria-hidden="true"></div>
+
+<!-- STEP -1: WELCOME -->
+<div class="screen active" id="step-welcome">
+  <p class="kicker">You found it</p>
+  <h1 id="welcome-heading">Hey, welcome.</h1>
+  <p class="quote" id="welcome-quote"></p>
+
+  <div id="name-capture">
+    <p>What should I call you?</p>
+    <div class="suggest-box">
+      <input type="text" id="name-input" class="suggest-input" placeholder="Your name" />
+      <button class="suggest-btn" onclick="saveVisitorName()">That's me</button>
+      <p class="suggest-note" id="name-note">Totally optional, and you can <a href="#" onclick="skipName(); return false;" style="color:inherit;">skip it</a>. It'll just say "hey" instead.</p>
+    </div>
+  </div>
+
+  <div id="player-capture">
+    <p>Which do you use?</p>
+    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+      <button class="option" onclick="setPlayer('youtube')" style="display:flex; align-items:center; gap:10px; justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#FF0000"/><path d="M10 8l6 4-6 4V8z" fill="#fff"/></svg>
+        YouTube
+      </button>
+      <button class="option" onclick="setPlayer('apple')" style="display:flex; align-items:center; gap:10px; justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="amGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FA233B"/><stop offset="100%" stop-color="#FB5C74"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#amGrad)"/><path d="M16 6.3v8.4c0 .9-.6 1.6-1.6 1.8l-1 .2c-.9.2-1.8-.4-1.8-1.4 0-.8.6-1.4 1.4-1.6l1.5-.3V8.8l-5 1v6.6c0 .9-.6 1.6-1.6 1.8l-1 .2c-.9.2-1.8-.4-1.8-1.4 0-.8.6-1.4 1.4-1.6l1.5-.3V7.6c0-.5.3-.9.8-1L15 5.4c.6-.1 1 .3 1 .9z" fill="#fff"/></svg>
+        Apple Music
+      </button>
+    </div>
+  </div>
+
+  <p id="player-note" class="corner-note" style="display:none; bottom: 40px;"></p>
+
+  <p id="returning-note" class="corner-note" style="display:none;"></p>
+
+  <p>This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
+  <p>Got a song you think should be in here? Drop it below and it'll come straight to me.</p>
+  <div class="suggest-box">
+    <input type="text" id="song-input" class="suggest-input" placeholder="Artist - Song title" />
+    <button class="suggest-btn" onclick="submitSuggestion()">Send suggestion</button>
+    <p class="suggest-note" id="suggest-note"></p>
+  </div>
+  <p class="tagline">Discover. Feel. Repeat.</p>
+  <button class="open-btn" onclick="goTo('step-intent')">Let's go</button>
+</div>
+
+<!-- STEP 0: INTENT -->
+<div class="screen" id="step-intent">
+  <p class="kicker">Scan complete</p>
+  <h1 id="intent-h1">What are we picking for?</h1>
+  <div class="grid single">
+    <button class="option" onclick="selectIntent('feel')"><span class="emoji">🎭</span>How are you feeling right now?</button>
+    <button class="option" onclick="selectIntent('want')"><span class="emoji">✨</span>How do you want to feel instead?</button>
+    <button class="option" onclick="showSongOfMoment()"><span class="emoji">🎵</span>Song of the moment</button>
+  </div>
+</div>
+
+<!-- STEP 1: MOOD -->
+<div class="screen" id="step-mood">
+  <button class="back" onclick="goTo('step-intent')">&larr; back</button>
+  <p class="kicker">Scan complete</p>
+  <h1 id="mood-h1">What's the vibe right now?</h1>
+  <div class="grid moods" id="mood-grid"></div>
+</div>
+
+<!-- STEP 2: GENRE -->
+<div class="screen" id="step-genre">
+  <button class="back" onclick="goTo('step-mood')">&larr; back</button>
+  <div class="mood-pill"><span class="dot"></span><span id="mood-pill-label"></span></div>
+  <h1>Pick a genre</h1>
+  <div class="grid" id="genre-grid"></div>
+</div>
+
+<!-- STEP 3: REVEAL -->
+<div class="screen" id="reveal">
+  <h1 id="reveal-title">Digging through the crates&hellip;</h1>
+  <p>One track, picked at random from the pool.</p>
+  <div class="reveal-visual">
+    <div class="disc"></div>
+    <div class="found-card" id="found-card">
+      <p class="label">Now playing</p>
+      <p class="track" id="found-track"></p>
+      <p class="artist" id="found-artist"></p>
+      <a class="open-btn" id="open-link" href="#" target="_blank" rel="noopener">Open on YouTube</a>
+      <button class="again-btn" onclick="goTo('step-intent')">Start over</button>
+    </div>
+  </div>
+</div>
+
+<footer>discovery pool &middot; 484 tracks &middot; growing</footer>
+
+<script>
+  // ---- SONG DATABASE ----
+  // Each song is tagged with moods + genres it fits.
+  // Add more entries here as the pool grows — no other code needs to change.
+  // (or in addition to) its stylistic genre — pre-2000 tracks live in their
+  // own "Classics" bucket rather than mixing into modern Pop/Electronic/Indie.
+  const SONGS = [
+    { title: "Happy", artist: "Pharrell Williams", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=ZbZSe6N_BXs" },
+    { title: "Dance Monkey", artist: "Tones and I", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=q0hyYWKXF0Q" },
+    { title: "Sauce", artist: "Na\u00efka", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=GilJI6hAvPQ" },
+    { title: "Best Part", artist: "Daniel Caesar ft. H.E.R.", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=vBy7FaapGRo" },
+    { title: "Cruise", artist: "ROYA", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=StLzbLbHrG0" },
+    { title: "Say You Won't Let Go", artist: "James Arthur", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=HuSqN_jxYEg" },
+    { title: "Chandelier", artist: "Sia", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=2vjPBrBU-TM" },
+    { title: "Say So", artist: "Doja Cat", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=pok8H_KF1FA" },
+    { title: "Juice", artist: "Lizzo", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=XaCrQL_8eMY" },
+    { title: "Adore You", artist: "Harry Styles", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=VF-r5TtlT9w" },
+    { title: "Location", artist: "Khalid", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=by3yRdlQvzs" },
+    { title: "Sorry Not Sorry", artist: "Demi Lovato", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=-MsvER1dpjM" },
+    { title: "Nightmare", artist: "Halsey", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=Q_dqfcvTZik" },
+    { title: "Retrograde", artist: "James Blake", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=6p6PcFFUm5I" },
+    { title: "Open", artist: "Rhye", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=GmAMahUIBI4" },
+    { title: "Made You Look", artist: "Meghan Trainor", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=gPCCYMeXin0" },
+    { title: "Here", artist: "Alessia Cara", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=5AWWHEW8Fr8" },
+    { title: "when the party's over", artist: "Billie Eilish", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=pbMwTqkKSps" },
+    { title: "Firework", artist: "Katy Perry", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=QGJuMBdaqIw" },
+    { title: "I'm Yours", artist: "Jason Mraz", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=7gO-jFLIgdk" },
+    { title: "Praying", artist: "Kesha", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=v-Dur3uXXCQ" },
+    { title: "Come Away With Me", artist: "Norah Jones", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=lbjZPFBD6JU" },
+    { title: "No Problem", artist: "Chance the Rapper ft. 2 Chainz & Lil Wayne", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=DVkkYlQNmbc" },
+    { title: "Good News", artist: "Mac Miller", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=aIHF7u9Wwiw" },
+    { title: "Lucid Dreams", artist: "Juice WRLD", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=mzB1VGEGcSU" },
+    { title: "HUMBLE.", artist: "Kendrick Lamar", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=tvTRZJ-4EyI" },
+    { title: "Hold On, We're Going Home", artist: "Drake ft. Majid Jordan", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=GxgqpCdOKak" },
+    { title: "DNA.", artist: "Kendrick Lamar", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=NLZRYQMLDW4" },
+    { title: "Feather (ft. Cise Starr & Akin from CYNE)", artist: "Nujabes", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=hQ5x8pHoIPA" },
+    { title: "EARFQUAKE", artist: "Tyler, The Creator", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=Oo3wu3wx1i8" },
+    { title: "Wet Dreamz", artist: "J. Cole", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=eCGV26aj-mM" },
+    { title: "Lost Ones", artist: "J. Cole", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=it-DvwBAkxw" },
+    { title: "SICKO MODE", artist: "Travis Scott ft. Drake", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=6ONRf7h3Mdk" },
+    { title: "My Favorite Part", artist: "Mac Miller ft. Ariana Grande", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=J_8xCOSekog" },
+    { title: "'Till I Collapse", artist: "Eminem ft. Nate Dogg", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=gjTwfiDCabE" },
+    { title: "Congratulations (ft. Bilal)", artist: "Mac Miller", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=JoFkQ7iAQcw" },
+    { title: "Old Town Road", artist: "Lil Nas X ft. Billy Ray Cyrus", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=r7qovpFAGrQ" },
+    { title: "L$D", artist: "A$AP Rocky", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=yEG2VTHS9yg" },
+    { title: "1-800-273-8255", artist: "Logic ft. Alessia Cara, Khalid", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=Kb24RrHIbFk" },
+    { title: "Bad and Boujee", artist: "Migos ft. Lil Uzi Vert", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=S-sJp1FfG7Q" },
+    { title: "Marvins Room", artist: "Drake", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=1VAqaftzcC8" },
+    { title: "Legend Has It", artist: "Run The Jewels", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=vWaljXUiCaE" },
+    { title: "MIDDLE CHILD", artist: "J. Cole", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=WILNIXZr2oc" },
+    { title: "Give", artist: "Sleep Token", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=8jXjK7kfRmY" },
+    { title: "Mine", artist: "Sleep Token", mood: ["romantic"], genre: ["metal"], url: "https://www.youtube.com/watch?v=wa4JgsPS4AQ" },
+    { title: "Youth", artist: "Daughter", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=2QT5eGHCJdE" },
+    { title: "Car Radio", artist: "twenty one pilots", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=92XVwY54h5k" },
+    { title: "Chlorine", artist: "twenty one pilots", mood: ["focused"], genre: ["rock"], url: "https://www.youtube.com/watch?v=eJnQBXmZ7Ek" },
+    { title: "Heathens", artist: "twenty one pilots", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=UprcpdwuwCg" },
+    { title: "Let Me Down Slowly", artist: "Alec Benjamin & Alessia Cara", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=pOo2TjvZNHc" },
+    { title: "Eastside", artist: "benny blanco, Halsey & Khalid", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=56WBK4ZK_cw" },
+    { title: "Not Gonna Die", artist: "Skillet", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=njJ7NZMH70M" },
+    { title: "The Resistance", artist: "Skillet", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=SKnRdQiH3-k" },
+    { title: "Nothing Makes Sense Anymore", artist: "Mike Shinoda", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=0KCHuiOVuuE" },
+    { title: "Sweater Weather", artist: "The Neighbourhood", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=GCdwKhTtNNw" },
+    { title: "In The Name Of Love", artist: "Martin Garrix & Bebe Rexha", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=AeGfss2vsZg" },
+    { title: "Human", artist: "Rag'n'Bone Man", mood: ["angry"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=L3wKzyIN1yk" },
+    { title: "Unity", artist: "TheFatRat", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=n8X9_MgEdCg" },
+    { title: "The Calling (feat. Laura Brehm)", artist: "TheFatRat", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=KR-eV7fHNbM" },
+    { title: "Leftovers", artist: "Dennis Lloyd", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=1SDh5zotOs4" },
+    { title: "Dancing On My Own (Ti\u00ebsto Remix)", artist: "Calum Scott", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=TCIPC17-O6g" },
+    { title: "Counting Stars", artist: "OneRepublic", mood: ["happy"], genre: ["rock"], url: "https://www.youtube.com/watch?v=_GWKkqNoyEA" },
+    { title: "Jericho", artist: "Iniko", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=C8BP8K-ZuL0" },
+    { title: "Think About You (feat. Qui\u00f1)", artist: "G-Eazy", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=R35hV-5jVkQ" },
+    { title: "Falling", artist: "Trevor Daniel", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=eIc4mqyN1Q8" },
+    { title: "Heroes Tonight (feat. Johnning)", artist: "Janji", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=3nQNiWdeH2Q" },
+    { title: "Love The Way You Hate Me", artist: "Like A Storm", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=5ibFP-Y7i1w" },
+    { title: "Him & I (Vanic Remix)", artist: "G-Eazy & Halsey", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=5MKoFrJ8pKA" },
+    { title: "Till It's Gone", artist: "Yelawolf", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=Ndpryp2OlUQ" },
+    { title: "That's Why (feat. GOLDN)", artist: "ILLENIUM", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=xZxtgWNHT6o" },
+    { title: "Inside Out (Levianth & Killercats Remix)", artist: "The Chainsmokers", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=Dt0ym0wQOU8" },
+    { title: "Alarm (Marshmello Remix)", artist: "Anne-Marie", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=iq7npmYlOK8" },
+    { title: "On My Own (feat. Nefera)", artist: "TroyBoi", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=NHffhGkpgFA" },
+    { title: "I Fall Apart (Renzyx Remix)", artist: "Post Malone", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=sxtcmgbDYTE" },
+    { title: "Calm Down (SKAN Remix)", artist: "Krewella", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=idPqijh2EWk" },
+    { title: "Still Here", artist: "Digital Daggers", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=K2C6G3PCpqw" },
+    { title: "Fuel To The Fire (The White Panda Remix)", artist: "Rationale", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=BiBEheGyG5o" },
+    { title: "Last Cigarette", artist: "Sense", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=9PgtyeugRvU" },
+    { title: "Bleed It Out (feat. Nea)", artist: "Kasbo", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=V5nxkrlEE2g" },
+    { title: "It's All On U (feat. Liam O'Donnell)", artist: "ILLENIUM", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=alyXFVKGIwE" },
+    { title: "Sick Boy (Nolan van Lith Remix)", artist: "The Chainsmokers", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=gB5un59BKFg" },
+    { title: "Saint (tof\u00fb Remix)", artist: "V\u00c9RIT\u00c9", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=8B_GP6ZdN1c" },
+    { title: "Be Like You (feat. Broods)", artist: "Whethan", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=z6ebSfXxW1Q" },
+    { title: "Control (feat. Jerry Folk)", artist: "Lemaitre", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=BsZG8e9Doi0" },
+    { title: "Everything Black (feat. Mike Taylor)", artist: "Unlike Pluto", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=lcg6wekmCRA" },
+    { title: "Kings", artist: "Tribe Society", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=zU7co2-yn_Q" },
+    { title: "I Still Wait For You", artist: "XYL\u00d8", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=ESnBu-DMpSs" },
+    { title: "Souls", artist: "TroyBoi", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=cuxk8vW01pY" },
+    { title: "Underneath (feat. Aeryn)", artist: "Synchronice", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=1FlNhi1pdNM" },
+    { title: "Sincerely", artist: "Stephen", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=gDDfKqRWueU" },
+    { title: "Remembering Myself", artist: "Stephen", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=15ry8nvYLdQ" },
+    { title: "All Night", artist: "Mishlawi", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=mTQOzfcdZpQ" },
+    { title: "Afterlife", artist: "XYL\u00d8", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=BR74ZadqjNA" },
+    { title: "Slave To Perfection", artist: "The One After None", mood: ["focused"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=keI9B2RKIOE" },
+    { title: "Painting Greys", artist: "Emmit Fenn", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=bU0tKzy5-uE" },
+    { title: "Make You Feel Loved", artist: "Cade", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=LPmclUWF8XE" },
+    { title: "Mindfvck", artist: "GHITA", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=Xml336Li6Mo" },
+    { title: "Lines of the Broken (feat. CUT_)", artist: "DROELOE x San Holo", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=IRp1COseMGI" },
+    { title: "Growing Up", artist: "Phil Good", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=kj1R3Nt3Obk" },
+    { title: "Between The Devil And The Deep Blue Sea", artist: "XYL\u00d8", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=xfaHZXWV0g8" },
+    { title: "Infected", artist: "Sickick", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=RzRhcnN-2XQ" },
+    { title: "Mind Games", artist: "Sickick", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=c-EkFgViaPE" },
+    { title: "Bermuda", artist: "Sickick", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=LWn28sKDWXo" },
+    { title: "bleach", artist: "anatu", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=EqdM24AJb3Q" },
+    { title: "Farewell (BEAUZ Remix)", artist: "ARMNHMR", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=dRQyDY9RHA8" },
+    { title: "Crazy In Love (feat. Leah Kelly)", artist: "The Eden Project", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=-8CbI1iG4To" },
+    { title: "Habit (T-Mass Remix)", artist: "Rain Man & Krysta Youngs", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=wFvMD5rzuvY" },
+    { title: "Murda", artist: "Snavs & Fabian Mazur", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=q-7w-iRQpTQ" },
+    { title: "Love Me (feat. Jacob Banks)", artist: "WiDE AWAKE", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=czd0Er-_qI8" },
+    { title: "Breathe", artist: "Jinco", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=s9W8gUOzVno" },
+    { title: "Euphoria", artist: "Stalgia", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=nI5xN8RIPNI" },
+    { title: "Money (James Mercy Remix)", artist: "Mia Vaile", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=VHIFYcfRlMA" },
+    { title: "You & I (Valoriz Remix)", artist: "Mike Williams & Dastic", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=Md8s3Yj7JyE" },
+    { title: "Creep (Thoreau Remix)", artist: "Ember Island", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=ZsinSuMuGTQ" },
+    { title: "Bare", artist: "WILDES", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=s247tTkJZ2A" },
+    { title: "Pretty Little Gangster", artist: "Ella Isaacson", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=ujgQOosyIYk" },
+    { title: "Now I Don't Care", artist: "Unlike Pluto", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=wn2g764Tnw8" },
+    { title: "Hotel Room", artist: "Blake Rose", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=wzhdSuTwyE8" },
+    { title: "RUNNING MILES", artist: "Hippie Sabotage", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=YwyFzO6xOXs" },
+    { title: "Wake Up With You", artist: "Emerson Leif", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=4HzHvgYRHJk" },
+    { title: "Down", artist: "Brandyn Burnette", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=KWbPFmRGRlI" },
+    { title: "Never Alone", artist: "Ascence", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=dWH-nylsi08" },
+    { title: "Needed You (feat. Trove)", artist: "Nora Van Elken", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=b6iv6CXa7k0" },
+    { title: "Free", artist: "Kidswaste", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=ksNBf8kXpqQ" },
+    { title: "Meaning", artist: "Neovaii", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=ZyclPqyKw4Y" },
+    { title: "Float Away", artist: "Neovaii", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=cmM_K4akTLQ" },
+    { title: "Enter Sandman", artist: "Metallica", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=CD-E-LDc384" },
+    { title: "Thunderstruck", artist: "AC/DC", mood: ["gym"], genre: ["rock"], url: "https://www.youtube.com/watch?v=v2AC41dglnM" },
+    { title: "Diva", artist: "Beyonc\u00e9", mood: ["gym"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=rNM5HW13_O8" },
+    { title: "Break Free (feat. Zedd)", artist: "Ariana Grande", mood: ["gym"], genre: ["pop"], url: "https://www.youtube.com/watch?v=L8eRzOYhLuw" },
+    { title: "R U Mine?", artist: "Arctic Monkeys", mood: ["gym"], genre: ["indie"], url: "https://www.youtube.com/watch?v=VQH8ZTgna3Q" },
+    { title: "Beautiful Now (feat. Jon Bellion)", artist: "Zedd", mood: ["gym"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=n1a7o44WxNo" },
+    { title: "She's Country", artist: "Jason Aldean", mood: ["gym"], genre: ["country"], url: "https://www.youtube.com/watch?v=ZsvR6XAl1os" },
+    { title: "Du hast", artist: "Rammstein", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=W3q8Od5qJio" },
+    { title: "Alright", artist: "Kendrick Lamar", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=Z-48u_uWMHY" },
+    { title: "Intro", artist: "The xx", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=xMV6l2y67rk" },
+    { title: "Sun & Moon (feat. Richard Bedford)", artist: "Above & Beyond", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=ll5ykbAumD4" },
+    { title: "Everlong", artist: "Foo Fighters", mood: ["gym"], genre: ["rock"], url: "https://www.youtube.com/watch?v=eBG7P-K-r1Y" },
+    { title: "Basket Case", artist: "Green Day", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=NUTGr5t3MoY" },
+    { title: "Choosin' Texas", artist: "Ella Langley", mood: ["sad"], genre: ["country"], url: "https://www.youtube.com/watch?v=nUsrYVxrDwI" },
+    { title: "drop dead", artist: "Olivia Rodrigo", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=78wrful9cVU" },
+    { title: "Janice STFU", artist: "Drake", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=h5u4dKq8C2w" },
+    { title: "The Fate of Ophelia", artist: "Taylor Swift", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=ko70cExuzZM" },
+    { title: "I Just Might", artist: "Bruno Mars", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=32LLE6Zk6zc" },
+    { title: "hate that i made you love me", artist: "Ariana Grande", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=82-jTNka3uc" },
+    { title: "American Girls", artist: "Harry Styles", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=o6jQo3-iCao" },
+    { title: "E85", artist: "Don Toliver", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=rVD-zV6ctoM" },
+    { title: "So Easy (To Fall In Love)", artist: "Olivia Dean", mood: ["romantic"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=7f_mlKlOLMo" },
+    { title: "Stan (feat. Dido)", artist: "Eminem", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=gOMhN-hfMtY" },
+    { title: "Mockingbird", artist: "Eminem", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=S9bCLPwzSC0" },
+    { title: "Sing for the Moment", artist: "Eminem", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=D4hAVemuQXY" },
+    { title: "Rap God", artist: "Eminem", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=hpmQPyU8QVw" },
+    { title: "Not Afraid", artist: "Eminem", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=j5-yKhDd64s" },
+    { title: "Little Engine", artist: "Eminem", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=trmoIfUVctQ" },
+    { title: "Killer (Remix) (feat. Jack Harlow, Cordae)", artist: "Eminem", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=FVeZcM6tBQU" },
+    { title: "Animals (Pt. 1) (feat. Eminem)", artist: "JID", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=JPyOYoNleFo" },
+    { title: "Fuel (feat. JID)", artist: "Eminem", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=t5H_CewqpKA" },
+    { title: "You Gon' Learn (feat. Royce Da 5'9\", White Gold)", artist: "Eminem", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=RnNJ7uVR7hM" },
+    { title: "Megalovania", artist: "Toby Fox (Undertale OST)", mood: ["hype"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=Kb_H5zsVtw0" },
+    { title: "BFG Division", artist: "Mick Gordon (DOOM OST)", mood: ["gym"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=QHRuTYtSbJQ" },
+    { title: "In the Blood (feat. Ashley Barrett)", artist: "Darren Korb (Hades OST)", mood: ["sad"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=akG1Y2Lkx9s" },
+    { title: "Last Surprise (feat. Lyn)", artist: "Shoji Meguro (Persona 5 OST)", mood: ["focused"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=ZNGqBDRJgvo" },
+    { title: "Inner Light", artist: "Bungie (Destiny 2 OST)", mood: ["happy"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=4jQ_NbelyZE" },
+    { title: "Lumi\u00e8re (feat. Alice Duport-Percier)", artist: "Lorien Testard (Clair Obscur: Expedition 33 OST)", mood: ["romantic"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=LpNVf8sczqU" },
+    { title: "BB's Theme (feat. Jenny Plant)", artist: "Ludvig Forssell (Death Stranding OST)", mood: ["chill"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=Ghk1RFr51xo" },
+    { title: "Hollow Knight (Main Theme)", artist: "Christopher Larkin (Hollow Knight OST)", mood: ["sad"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=r6PuACnHkNY" },
+    { title: "Reach for the Summit", artist: "Lena Raine (Celeste OST)", mood: ["happy"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=qx1PcEgmFHY" },
+    { title: "Floral Fury", artist: "Kristofer Maddigan (Cuphead OST)", mood: ["hype"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=2clUY-OsCpY" },
+    { title: "Weight of the World (English Version, feat. J'Nique Nicole)", artist: "Keiichi Okabe (NieR: Automata OST)", mood: ["sad"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=Yza2l5sWYzg" },
+    { title: "Nascence", artist: "Austin Wintory (Journey OST)", mood: ["romantic"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=oHesRe0uD9Q" },
+    { title: "Main Theme", artist: "Tsukasa Saitoh (Elden Ring OST)", mood: ["angry"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=Vy_MyCbpDiQ" },
+    { title: "Light of Nibel (feat. Aeralie Brighton)", artist: "Gareth Coker (Ori and the Blind Forest OST)", mood: ["chill"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=t6vWDz5NzOY" },
+    { title: "Still Alive", artist: "Jonathan Coulton (Portal OST)", mood: ["happy"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=RSsstXfcRWw" },
+    { title: "Shy Girl", artist: "Kedam", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=uScZ8WZMjhs" },
+    { title: "Flowers", artist: "The Tech Thieves", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=pnEQ4Dz8PsM" },
+    { title: "Safety", artist: "Alter.", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=LQkE-mkTL2I" },
+    { title: "Lost My Way", artist: "Sickick", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=4SCp4fQQgV4" },
+    { title: "No Money", artist: "Jacob Tillberg", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=bQlY17SbLkQ" },
+    { title: "After Life (feat. Stacy Barthe)", artist: "Tchami", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=EFS3T321VUY" },
+    { title: "Nocturne", artist: "TesseracT", mood: ["chill"], genre: ["metal"], url: "https://www.youtube.com/watch?v=get0cXOsSXg" },
+    { title: "Doomsday", artist: "Architects", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=Cmpe5BX2Q-o" },
+    { title: "In Waves", artist: "Trivium", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=0Xfvk028Kv0" },
+    { title: "Just Pretend", artist: "Bad Omens", mood: ["romantic"], genre: ["metal"], url: "https://www.youtube.com/watch?v=GLRFl26Q92s" },
+    { title: "Animals", artist: "Architects", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=jdWhJcrrjQs" },
+    { title: "Bleed", artist: "Meshuggah", mood: ["focused"], genre: ["metal"], url: "https://www.youtube.com/watch?v=qc98u-eGzlc" },
+    { title: "Reincarnate", artist: "Motionless In White", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=CVQC3bx_AXs" },
+    { title: "Bubblin", artist: "Anderson .Paak", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=7PmUtmfTmbg" },
+    { title: "Glowed Up (feat. Anderson .Paak)", artist: "KAYTRANADA", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=yaWesK-nWts" },
+    { title: "Day 'N' Nite", artist: "Kid Cudi", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=72yNKTFw9UM" },
+    { title: "Magnolia", artist: "Playboi Carti", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=oCveByMXd_0" },
+    { title: "Take Care (feat. Rihanna)", artist: "Drake", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=-zzP29emgpg" },
+    { title: "Norf Norf", artist: "Vince Staples", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=mb6Jc4juSF8" },
+    { title: "Chum", artist: "Earl Sweatshirt", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=FCbWLSZrZfw" },
+    { title: "Dreams and Nightmares (Intro)", artist: "Meek Mill", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=S8gfqs1-NuE" },
+    { title: "Shut Up and Dance", artist: "WALK THE MOON", mood: ["happy"], genre: ["rock"], url: "https://www.youtube.com/watch?v=6JCLY0Rlx6Q" },
+    { title: "Airplanes", artist: "Local Natives", mood: ["chill"], genre: ["rock"], url: "https://www.youtube.com/watch?v=8pZkZguPAPs" },
+    { title: "Kettering", artist: "The Antlers", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=ipbukl6oFoQ" },
+    { title: "Sail", artist: "AWOLNATION", mood: ["hype"], genre: ["rock"], url: "https://www.youtube.com/watch?v=tgIqecROs5M" },
+    { title: "Ho Hey", artist: "The Lumineers", mood: ["romantic"], genre: ["rock"], url: "https://www.youtube.com/watch?v=zvCBSSwgtg4" },
+    { title: "Savior", artist: "Rise Against", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=e8X3ACToii0" },
+    { title: "The High Road", artist: "Broken Bells", mood: ["focused"], genre: ["rock"], url: "https://www.youtube.com/watch?v=gWBG1j_flrg" },
+    { title: "Diamond Eyes (Boom-Lay Boom-Lay Boom)", artist: "Shinedown", mood: ["gym"], genre: ["rock"], url: "https://www.youtube.com/watch?v=hez6tDpiWDA" },
+    { title: "telepat\u00eda", artist: "Kali Uchis", mood: ["happy"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=bn_p95HbHoQ" },
+    { title: "Bad Habit", artist: "Steve Lacy", mood: ["chill"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=VF-FGf_ZZiI" },
+    { title: "Wicked Games", artist: "The Weeknd", mood: ["sad"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=O1OTWCd40bc" },
+    { title: "Shea Butter Baby (feat. J. Cole)", artist: "Ari Lennox", mood: ["hype"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=FFuZ2avoYmw" },
+    { title: "Get You (feat. Kali Uchis)", artist: "Daniel Caesar", mood: ["romantic"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=uQFVqltOXRg" },
+    { title: "Two Weeks", artist: "FKA twigs", mood: ["angry"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=3yDP9MKVhZc" },
+    { title: "Cranes in the Sky", artist: "Solange", mood: ["focused"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=S0qrinhNnOM" },
+    { title: "Body", artist: "Megan Thee Stallion", mood: ["gym"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=7PBYGu4Az8s" },
+    { title: "Boom Clap", artist: "Charli XCX", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=pgv2ZhBXrIw" },
+    { title: "Warm On A Cold Night", artist: "HONNE", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=CX5f0NcqlMs" },
+    { title: "Issues", artist: "Julia Michaels", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=9Ke4480MicU" },
+    { title: "Don't Start Now", artist: "Dua Lipa", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=oygrmJFKYZY" },
+    { title: "I Like Me Better", artist: "Lauv", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=BcqxLCWn-CE" },
+    { title: "Flowers", artist: "Miley Cyrus", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=URkaXmOM-a8" },
+    { title: "everything i wanted", artist: "Billie Eilish", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=EgBJmlPo8Xw" },
+    { title: "10,000 Hours", artist: "Dan + Shay, Justin Bieber", mood: ["happy"], genre: ["country"], url: "https://www.youtube.com/watch?v=Y2E71oe0aSM" },
+    { title: "Colder Weather", artist: "Zac Brown Band", mood: ["chill"], genre: ["country"], url: "https://www.youtube.com/watch?v=oouFE51HcqM" },
+    { title: "'Til You Can't", artist: "Cody Johnson", mood: ["sad"], genre: ["country"], url: "https://www.youtube.com/watch?v=v2LixP7n_hM" },
+    { title: "Take a Little Ride", artist: "Jason Aldean", mood: ["hype"], genre: ["country"], url: "https://www.youtube.com/watch?v=CYT6RkTe26M" },
+    { title: "Speechless", artist: "Dan + Shay", mood: ["romantic"], genre: ["country"], url: "https://www.youtube.com/watch?v=7UoP9ABJXGE" },
+    { title: "Save Me", artist: "Jelly Roll", mood: ["angry"], genre: ["country"], url: "https://www.youtube.com/watch?v=pXJIFK6t38A" },
+    { title: "Something in the Orange", artist: "Zach Bryan", mood: ["focused"], genre: ["country"], url: "https://www.youtube.com/watch?v=lA8F9sIhGdg" },
+    { title: "Beautiful Crazy", artist: "Luke Combs", mood: ["happy"], genre: ["country"], url: "https://www.youtube.com/watch?v=rItv9i6c7AY" },
+    { title: "Wasted On You", artist: "Morgan Wallen", mood: ["chill"], genre: ["country"], url: "https://www.youtube.com/watch?v=OqaznqwGkrs" },
+    { title: "Homesick", artist: "Kane Brown", mood: ["sad"], genre: ["country"], url: "https://www.youtube.com/watch?v=ukHikH_10CA" },
+    { title: "Country Girl (Shake It for Me)", artist: "Luke Bryan", mood: ["hype"], genre: ["country"], url: "https://www.youtube.com/watch?v=7HX4SfnVlP4" },
+    { title: "Bless the Broken Road", artist: "Rascal Flatts", mood: ["romantic"], genre: ["country"], url: "https://www.youtube.com/watch?v=7a47fEuB9vo" },
+    { title: "Redneck Woman", artist: "Gretchen Wilson", mood: ["angry"], genre: ["country"], url: "https://www.youtube.com/watch?v=82dDnv9zeLs" },
+    { title: "Sleeping on the Blacktop", artist: "Colter Wall", mood: ["focused"], genre: ["country"], url: "https://www.youtube.com/watch?v=r7uiVktlD1U" },
+    { title: "Body Like A Back Road", artist: "Sam Hunt", mood: ["gym"], genre: ["country"], url: "https://www.youtube.com/watch?v=Fx-EfjsRcBk" },
+    { title: "Freak Like Me", artist: "Halestorm", mood: ["happy"], genre: ["metal"], url: "https://www.youtube.com/watch?v=4sXoA7B5yJo" },
+    { title: "Send the Pain Below", artist: "Chevelle", mood: ["chill"], genre: ["metal"], url: "https://www.youtube.com/watch?v=gpyRI1j9t6c" },
+    { title: "The Death of Me", artist: "Asking Alexandria", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=Xl1lS6B9pMc" },
+    { title: "The American Nightmare", artist: "Ice Nine Kills", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=JXq2TBAuL8o" },
+    { title: "Might Love Myself", artist: "Beartooth", mood: ["romantic"], genre: ["metal"], url: "https://www.youtube.com/watch?v=83rcK9Xne5A" },
+    { title: "Redneck", artist: "Lamb of God", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=oqdZpxkzNvc" },
+    { title: "Lola Montez", artist: "Volbeat", mood: ["focused"], genre: ["metal"], url: "https://www.youtube.com/watch?v=GWOIDN-akrY" },
+    { title: "Undead", artist: "Hollywood Undead", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=CCVvq4g4Qj0" },
+    { title: "Glow Like Dat", artist: "Rich Brian", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=adDD43CvrUc" },
+    { title: "Hair Down (feat. Kendrick Lamar)", artist: "SiR", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=BQqEMLOOMCo" },
+    { title: "Topanga", artist: "Trippie Redd", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=qE4Z0KfzpE8" },
+    { title: "XO Tour Llif3", artist: "Lil Uzi Vert", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=WrsFXgQk5UI" },
+    { title: "Recognize (feat. Drake)", artist: "PARTYNEXTDOOR", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=WsPfSXJaelk" },
+    { title: "151 Rum", artist: "JID", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=vtY8pM-H65c" },
+    { title: "Doomsday (feat. Pebbles The Invisible Girl)", artist: "MF DOOM", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=LMeluRz2wv4" },
+    { title: "Hustlin'", artist: "Rick Ross", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=JU9TouRnO84" },
+    { title: "Passenger (feat. Maynard James Keenan)", artist: "Deftones", mood: ["chill"], genre: ["metal"], url: "https://www.youtube.com/watch?v=IjainiB8mk4" },
+    { title: "Come Clarity", artist: "In Flames", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=VKlGT8ZVTfQ" },
+    { title: "Tears Don't Fall", artist: "Bullet For My Valentine", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=9sTQ0QdkN3Q" },
+    { title: "Scars", artist: "I Prevail", mood: ["romantic"], genre: ["metal"], url: "https://www.youtube.com/watch?v=tZzL4jI60p4" },
+    { title: "Freak on a Leash", artist: "Korn", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=jRGrNDV2mKc" },
+    { title: "The Signal Fire (feat. Howard Jones)", artist: "Killswitch Engage", mood: ["focused"], genre: ["metal"], url: "https://www.youtube.com/watch?v=2N0ShfOOEq4" },
+    { title: "Headstrong", artist: "Trapt", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=HTvu1Yr3Ohk" },
+    { title: "Bounce Back", artist: "Big Sean ft. Kanye West, Jeremih", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=phr1pOFK1V8" },
+    { title: "See You Again (feat. Kali Uchis)", artist: "Tyler, The Creator", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=EZE62LpaqHg" },
+    { title: "Let You Down", artist: "NF", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=fbHbTBP_u7U" },
+    { title: "Antidote", artist: "Travis Scott", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=KnZ8h3MRuYg" },
+    { title: "How to Love", artist: "Lil Wayne", mood: ["romantic"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=y8Gf4-eT3w0" },
+    { title: "ULT (feat. Juicy J)", artist: "Denzel Curry", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=q8VO4Rm3ulw" },
+    { title: "Deeper", artist: "Freddie Gibbs & Madlib", mood: ["focused"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=kGaRbhat-FA" },
+    { title: "Sleep Alone", artist: "Two Door Cinema Club", mood: ["happy"], genre: ["rock"], url: "https://www.youtube.com/watch?v=YNXybY2DtwM" },
+    { title: "Apocalypse", artist: "Cigarettes After Sex", mood: ["chill"], genre: ["rock"], url: "https://www.youtube.com/watch?v=sElE_BfQ67s" },
+    { title: "Robbers", artist: "The 1975", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=k4M55Zc1Wjc" },
+    { title: "Ain't No Rest For The Wicked", artist: "Cage The Elephant", mood: ["hype"], genre: ["rock"], url: "https://www.youtube.com/watch?v=HKtsdZs9LJo" },
+    { title: "Let It Go", artist: "James Bay", mood: ["romantic"], genre: ["rock"], url: "https://www.youtube.com/watch?v=cYqVtNBfDkg" },
+    { title: "The Kids Aren't Alright", artist: "The Offspring", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=7iNbnineUCI" },
+    { title: "Holocene", artist: "Bon Iver", mood: ["focused"], genre: ["rock"], url: "https://www.youtube.com/watch?v=TWcyIpul8OE" },
+    { title: "Can't Stop the Feeling!", artist: "Justin Timberlake", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=ru0K8uYEZWw" },
+    { title: "Sally, When the Wine Runs Out", artist: "Role Model", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=F1oKhsy8wGw" },
+    { title: "Wake Me Up", artist: "Avicii", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=J1pidmOxAMA" },
+    { title: "Happier", artist: "Marshmello ft. Bastille", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=m7Bc3pLyij0" },
+    { title: "Are You With Me", artist: "Lost Frequencies", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=VjHMDlAPMUw" },
+    { title: "Best Friend", artist: "Rex Orange County", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=OqBuXQLR4Y8" },
+    { title: "Sofia", artist: "Clairo", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=L9l8zCOwEII" },
+    { title: "ocean eyes", artist: "Billie Eilish", mood: ["chill"], genre: ["pop"], url: "https://www.youtube.com/watch?v=viimfQi_pUw" },
+    { title: "Alrighty Aphrodite", artist: "Peach Pit", mood: ["happy"], genre: ["indie"], url: "https://www.youtube.com/watch?v=ICNtZKmQGMw" },
+    { title: "Fire for You", artist: "Cannons", mood: ["happy"], genre: ["indie"], url: "https://www.youtube.com/watch?v=u4HQevc9JE0" },
+    { title: "Everytime", artist: "boy pablo", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=Lzi7ljJiLJQ" },
+    { title: "Locket", artist: "Crumb", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=BqnG_Ei35JE" },
+    { title: "Anchor", artist: "Novo Amor", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=OmKAn8rNbKg" },
+    { title: "Show Me How", artist: "Men I Trust", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=OZRYzH0Q0pU" },
+    { title: "Boys in the Better Land", artist: "Fontaines D.C.", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=abxGaMCDhmU" },
+    { title: "Danny Nedelko", artist: "IDLES", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=QkF_G-RF66M" },
+    { title: "Skinny Love", artist: "Bon Iver", mood: ["romantic"], genre: ["indie"], url: "https://www.youtube.com/watch?v=Daz-_OLM-is" },
+    { title: "Bloom", artist: "The Paper Kites", mood: ["romantic"], genre: ["indie"], url: "https://www.youtube.com/watch?v=WvTYgs5Yn_g" },
+    { title: "Yuk Foo", artist: "Wolf Alice", mood: ["angry"], genre: ["indie"], url: "https://www.youtube.com/watch?v=5a_AigNZYZc" },
+    { title: "Guided by Angels", artist: "Amyl and The Sniffers", mood: ["angry"], genre: ["indie"], url: "https://www.youtube.com/watch?v=qCl-182Y_Ug" },
+    { title: "Near Light", artist: "\u00d3lafur Arnalds", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=0kYc55bXJFI" },
+    { title: "Says", artist: "Nils Frahm", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=dIwwjy4slI8" },
+    { title: "way it goes", artist: "Hippo Campus", mood: ["happy"], genre: ["indie"], url: "https://www.youtube.com/watch?v=n3TQKEUne5Q" },
+    { title: "Are You Bored Yet? (feat. Clairo)", artist: "Wallows", mood: ["happy"], genre: ["indie"], url: "https://www.youtube.com/watch?v=wIgmyE5Juzw" },
+    { title: "Loving Is Easy (feat. Benny Sings)", artist: "Rex Orange County", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=39IU7ADaXmQ" },
+    { title: "Home", artist: "Cavetown", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=2APLh8_ExU0" },
+    { title: "Turn Out The Lights", artist: "Julien Baker", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=xV1dMqeb4_U" },
+    { title: "Somebody You Found", artist: "The Japanese House", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=dGpIAQI-6Hc" },
+    { title: "Chaise Longue", artist: "Wet Leg", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=Zd9jeJk2UHQ" },
+    { title: "One Rizla", artist: "shame", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=7Mz_K1b5rVk" },
+    { title: "Only Love", artist: "Ben Howard", mood: ["romantic"], genre: ["indie"], url: "https://www.youtube.com/watch?v=yELxHcXfM38" },
+    { title: "Take Me to Church", artist: "Hozier", mood: ["romantic"], genre: ["indie"], url: "https://www.youtube.com/watch?v=PVjiKRfKpPI" },
+    { title: "Never Fight a Man with a Perm", artist: "IDLES", mood: ["angry"], genre: ["indie"], url: "https://www.youtube.com/watch?v=dEe4i2osF5A" },
+    { title: "On The Nature Of Daylight", artist: "Max Richter", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=InyT9Gyoz_o" },
+    { title: "A Hero's Death", artist: "Fontaines D.C.", mood: ["angry"], genre: ["indie"], url: "https://www.youtube.com/watch?v=jLNt8aMNbvY" },
+    { title: "Avril 14th", artist: "Aphex Twin", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=uxTdTaNIUxo" },
+    { title: "Do It", artist: "Chloe x Halle", mood: ["happy"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=a9HIaGcBocc" },
+    { title: "Whoa", artist: "Snoh Aalegra", mood: ["chill"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=rzRh6Eon5DQ" },
+    { title: "PRBLMS", artist: "6LACK", mood: ["sad"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=fS9m0Ac8PCU" },
+    { title: "Loyal", artist: "Chris Brown ft. Lil Wayne, Tyga", mood: ["hype"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=JXRN_LkCa_o" },
+    { title: "Boo'd Up", artist: "Ella Mai", mood: ["romantic"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=6YNZlXfW6Ho" },
+    { title: "Formation", artist: "Beyonc\u00e9", mood: ["angry"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=WDZJPJV__bQ" },
+    { title: "(No One Knows Me) Like the Piano", artist: "Sampha", mood: ["focused"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=_NSuIYwBxu4" },
+    { title: "Silk Chiffon", artist: "MUNA ft. Phoebe Bridgers", mood: ["happy"], genre: ["indie"], url: "https://www.youtube.com/watch?v=fhyk9rchC2c" },
+    { title: "Talk Too Much", artist: "COIN", mood: ["happy"], genre: ["indie"], url: "https://www.youtube.com/watch?v=KWxM_zLJGsU" },
+    { title: "Goodie Bag", artist: "Still Woozy", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=zL3wWykAKfs" },
+    { title: "Lo Que Siento", artist: "Cuco", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=AjGkbFqi67c" },
+    { title: "Motion Sickness", artist: "Phoebe Bridgers", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=9sfYpolGCu8" },
+    { title: "rue", artist: "girl in red", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=3xeAK9A8SOI" },
+    { title: "MYSTERY", artist: "Turnstile", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=C5_QkWHzOa0" },
+    { title: "Kilby Girl", artist: "The Backseat Lovers", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=6ZZghJG0d0E" },
+    { title: "Can I Call You Tonight?", artist: "Dayglow", mood: ["romantic"], genre: ["indie"], url: "https://www.youtube.com/watch?v=hh1WeQxfCX0" },
+    { title: "That's Life", artist: "Still Woozy", mood: ["romantic"], genre: ["indie"], url: "https://www.youtube.com/watch?v=acEHv_fNn8E" },
+    { title: "Welcome to Hell", artist: "black midi", mood: ["angry"], genre: ["indie"], url: "https://www.youtube.com/watch?v=Efmq_uXt1Rk" },
+    { title: "Narrator (ft. Martha Skye Murphy)", artist: "Squid", mood: ["angry"], genre: ["indie"], url: "https://www.youtube.com/watch?v=__zmVSREvxY" },
+    { title: "Your Hand in Mine", artist: "Explosions in the Sky", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=1aMQ8db4Y4c" },
+    { title: "Release", artist: "Hammock", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=vTaBX_FoGWk" },
+    { title: "gold", artist: "EDEN", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=1ig9_erNMNU" },
+    { title: "Wake Up", artist: "EDEN", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=YthChN1Wq8M" },
+    { title: "rock + roll", artist: "EDEN", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=geZ_5Ri7ANg" },
+    { title: "circles", artist: "EDEN", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=fP8ElyrwtEc" },
+    { title: "Say My Name", artist: "ODESZA", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=QMssNXBCCl0" },
+    { title: "Kerala", artist: "Bonobo", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=S0Q4gqBUs7c" },
+    { title: "Someone Like You", artist: "Adele", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=He2XpqNliFM" },
+    { title: "Someone You Loved", artist: "Lewis Capaldi", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=zABLecsR5UE" },
+    { title: "Bruises", artist: "Lewis Capaldi", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=QwtRXG1QpR4" },
+    { title: "Forget Me", artist: "Lewis Capaldi", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=nBZlrbrBO1I" },
+    { title: "Stay With Me", artist: "Sam Smith", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=pB-5XG-DbAA" },
+    { title: "Sad Machine", artist: "Porter Robinson", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=qeu4RugfDw4" },
+    { title: "Never Be Like You", artist: "Flume ft. Kai", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=-KPnyf8vwXI" },
+    { title: "Physical", artist: "Dua Lipa", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=9HDEHj2yzew" },
+    { title: "7 rings", artist: "Ariana Grande", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=QYh6mYIJG2Y" },
+    { title: "Von dutch", artist: "Charli XCX", mood: ["hype"], genre: ["pop"], url: "https://www.youtube.com/watch?v=cwZ1L_0QLjw" },
+    { title: "Bangarang", artist: "Skrillex ft. Sirah", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=YJVmu6yttiw" },
+    { title: "Turn Down for What", artist: "DJ Snake & Lil Jon", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=HMUDVMiITOU" },
+    { title: "Firestone", artist: "Kygo ft. Conrad Sewell", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=9Sc-ir2UwGU" },
+    { title: "Indian Summer", artist: "Jai Wolf", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=qbGZDEFHBmc" },
+    { title: "Good Things Fall Apart", artist: "ILLENIUM ft. Jon Bellion", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=XpmeVNxZ-Ks" },
+    { title: "X Rated", artist: "Excision ft. Messinian", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=wxNT8ONn-To" },
+    { title: "Internet Friends", artist: "Knife Party", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=luJJBeCFeM0" },
+    { title: "I Can't Stop", artist: "Flux Pavilion", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=3Q9rewnLFYw" },
+    { title: "See", artist: "Tycho", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=5wWBLbQInqk" },
+    { title: "Cirrus", artist: "Bonobo", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=WF34N4gJAKE" },
+    { title: "Weightless", artist: "Marconi Union", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=UfcAVejslrU" },
+    { title: "Faded", artist: "Alan Walker", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=c_a3IQFX6v0" },
+    { title: "Sunset Lover", artist: "Petit Biscuit", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=5hALH-s6ZkA" },
+    { title: "Crashing", artist: "ILLENIUM ft. Bahari", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=Q6jnXN_nTlY" },
+    { title: "Don't Let Me Down", artist: "The Chainsmokers ft. Daya", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=Io0fBr1XBUA" },
+    { title: "Say It", artist: "Flume ft. Tove Lo", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=htNmT31AW9U" },
+    { title: "Watercolour", artist: "Pendulum", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=tEPB7uzKuh4" },
+    { title: "A Moment Apart", artist: "ODESZA", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=xarC5jAiO7w" },
+    { title: "My Heart", artist: "Different Heaven & EH!DE", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=jK2aIUmmdP4" },
+    { title: "Light", artist: "San Holo", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=uOFTqVi-qp4" },
+    { title: "Jubel", artist: "Klingande", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=b6vSf0cA9qY" },
+    { title: "You There", artist: "Aquilo", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=LlefHgF0kPA" },
+    { title: "Core", artist: "RL Grime", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=04ufimjXEbA" },
+    { title: "Close To You (Moonlighting)", artist: "Cosima", mood: ["romantic"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=CI-UUyGgbDI" },
+    { title: "Flash Drive (feat. B\u25b2by)", artist: "Wave Racer", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=-Js_-DtskxM" },
+    { title: "Treasure", artist: "Bruno Mars", mood: ["happy"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=nPvuNsRccVw" },
+    { title: "Come Down", artist: "Anderson .Paak", mood: ["happy"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=-OqrcUvrbRY" },
+    { title: "Good Days", artist: "SZA", mood: ["chill"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=2p3zZoraK9g" },
+    { title: "Thinkin Bout You", artist: "Frank Ocean", mood: ["sad"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=6JHu3b-pbh8" },
+    { title: "Session 32", artist: "Summer Walker", mood: ["sad"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=tyxJYWvQIbY" },
+    { title: "Skate", artist: "Silk Sonic", mood: ["hype"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=CEw-7cMnBDY" },
+    { title: "BREAK MY SOUL", artist: "Beyonc\u00e9", mood: ["hype"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=UdkJ3u_TA_U" },
+    { title: "No One", artist: "Alicia Keys", mood: ["romantic"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=rywUS-ohqeE" },
+    { title: "Don't Hurt Yourself", artist: "Beyonc\u00e9 ft. Jack White", mood: ["angry"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=2QMFRZe-e3s" },
+    { title: "Focus", artist: "H.E.R.", mood: ["focused"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=Z5ze4CUAkE8" },
+    { title: "Blue Lights", artist: "Jorja Smith", mood: ["focused"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=R8YwnQMQuJI" },
+    { title: "Coming Home", artist: "Leon Bridges", mood: ["happy"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=MTrKkqE9p1o" },
+    { title: "Roll Some Mo", artist: "Lucky Daye", mood: ["chill"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=6WXmaJcguXo" },
+    { title: "Heartbreak Anniversary", artist: "Giveon", mood: ["sad"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=uWRlisQu4fo" },
+    { title: "Yeah!", artist: "Usher ft. Lil Jon & Ludacris", mood: ["hype"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=GxBSyx85Kp8" },
+    { title: "Adorn", artist: "Miguel", mood: ["romantic"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=8dM5QYdTo08" },
+    { title: "Kill Bill", artist: "SZA", mood: ["angry"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=MSRcC626prw" },
+    { title: "Island in the Sun", artist: "Weezer", mood: ["happy"], genre: ["rock"], url: "https://www.youtube.com/watch?v=erG5rgNYSdk" },
+    { title: "Here It Goes Again", artist: "OK Go", mood: ["happy"], genre: ["rock"], url: "https://www.youtube.com/watch?v=dTAAsCNK7RA" },
+    { title: "Last Nite", artist: "The Strokes", mood: ["happy"], genre: ["rock"], url: "https://www.youtube.com/watch?v=TOypSnKFHrE" },
+    { title: "Use Somebody", artist: "Kings of Leon", mood: ["chill"], genre: ["rock"], url: "https://www.youtube.com/watch?v=gnhXHvRoUd0" },
+    { title: "Red Eyes", artist: "The War on Drugs", mood: ["chill"], genre: ["rock"], url: "https://www.youtube.com/watch?v=1LmX5c7HoUw" },
+    { title: "Welcome to the Black Parade", artist: "My Chemical Romance", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=RRKJiM9Njr8" },
+    { title: "How to Save a Life", artist: "The Fray", mood: ["romantic"], genre: ["rock"], url: "https://www.youtube.com/watch?v=cjVQ36NhbMk" },
+    { title: "In the End", artist: "Linkin Park", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=oIwWqYSbzGA" },
+    { title: "Pyramid Song", artist: "Radiohead", mood: ["focused"], genre: ["rock"], url: "https://www.youtube.com/watch?v=2Agt3XfmccM" },
+    { title: "Mykonos", artist: "Fleet Foxes", mood: ["chill"], genre: ["rock"], url: "https://www.youtube.com/watch?v=DT-dxG4WWf4" },
+    { title: "I Will Follow You into the Dark", artist: "Death Cab for Cutie", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=3iV_1ESMHaI" },
+    { title: "Seven Nation Army", artist: "The White Stripes", mood: ["hype"], genre: ["rock"], url: "https://www.youtube.com/watch?v=0J2QdDbelmY" },
+    { title: "Chasing Cars", artist: "Snow Patrol", mood: ["romantic"], genre: ["rock"], url: "https://www.youtube.com/watch?v=GemKqzILV4w" },
+    { title: "Animal I Have Become", artist: "Three Days Grace", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=xqds0B_meys" },
+    { title: "Hopp\u00edpolla", artist: "Sigur R\u00f3s", mood: ["focused"], genre: ["rock"], url: "https://www.youtube.com/watch?v=JAYb8ZyjzD0" },
+    { title: "Pumped Up Kicks", artist: "Foster the People", mood: ["happy"], genre: ["rock"], url: "https://www.youtube.com/watch?v=SDTZ7iX4vTQ" },
+    { title: "Chocolate", artist: "The 1975", mood: ["chill"], genre: ["rock"], url: "https://www.youtube.com/watch?v=CHk5SWVO4p8" },
+    { title: "Campus", artist: "Vampire Weekend", mood: ["chill"], genre: ["rock"], url: "https://www.youtube.com/watch?v=bUjFm9EnNzU" },
+    { title: "Bloodbuzz Ohio", artist: "The National", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=yfySK7CLEEg" },
+    { title: "I Can Feel a Hot One", artist: "Manchester Orchestra", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=lOPUNhgLL-A" },
+    { title: "The Pretender", artist: "Foo Fighters", mood: ["hype"], genre: ["rock"], url: "https://www.youtube.com/watch?v=SBjQ9tuuTJQ" },
+    { title: "Yellow", artist: "Coldplay", mood: ["romantic"], genre: ["rock"], url: "https://www.youtube.com/watch?v=yKNxeF4KMsY" },
+    { title: "Miss Murder", artist: "AFI", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=YU4hhNKsPog" },
+    { title: "I Need My Girl", artist: "The National", mood: ["focused"], genre: ["rock"], url: "https://www.youtube.com/watch?v=A-Tod1_tZdU" },
+    { title: "Uprising", artist: "Muse", mood: ["hype"], genre: ["rock"], url: "https://www.youtube.com/watch?v=w8KQmps-Sog" },
+    { title: "No One Knows", artist: "Queens of the Stone Age", mood: ["hype"], genre: ["rock"], url: "https://www.youtube.com/watch?v=s88r_q7oufE" },
+    { title: "Party Hard", artist: "Andrew W.K.", mood: ["happy"], genre: ["metal"], url: "https://www.youtube.com/watch?v=WccfbPQNMbg" },
+    { title: "Digital Bath", artist: "Deftones", mood: ["chill"], genre: ["metal"], url: "https://www.youtube.com/watch?v=O_IIAYZL1R4" },
+    { title: "The Diary of Jane", artist: "Breaking Benjamin", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=DWaB4PXCwFU" },
+    { title: "Chop Suey!", artist: "System of a Down", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=CSvFpBOe8eY" },
+    { title: "My Immortal", artist: "Evanescence", mood: ["romantic"], genre: ["metal"], url: "https://www.youtube.com/watch?v=5anLPw0Efmo" },
+    { title: "Down with the Sickness", artist: "Disturbed", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=09LTT0xwdfw" },
+    { title: "Lateralus", artist: "TOOL", mood: ["focused"], genre: ["metal"], url: "https://www.youtube.com/watch?v=Y7JG63IuaWs" },
+    { title: "Happy Song", artist: "Bring Me the Horizon", mood: ["happy"], genre: ["metal"], url: "https://www.youtube.com/watch?v=GBRAnuT48qo" },
+    { title: "Change (In the House of Flies)", artist: "Deftones", mood: ["chill"], genre: ["metal"], url: "https://www.youtube.com/watch?v=WPpDyIJdasg" },
+    { title: "Drown", artist: "Bring Me the Horizon", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=TkV5709EG5M" },
+    { title: "Duality", artist: "Slipknot", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=6fVE8kSM43I" },
+    { title: "Follow You", artist: "Bring Me the Horizon", mood: ["romantic"], genre: ["metal"], url: "https://www.youtube.com/watch?v=-tVWt2RDsoM" },
+    { title: "Psychosocial", artist: "Slipknot", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=5abamRO41fE" },
+    { title: "Flying Whales", artist: "Gojira", mood: ["focused"], genre: ["metal"], url: "https://www.youtube.com/watch?v=YP7p2k678tQ" },
+    { title: "Follow Your Arrow", artist: "Kacey Musgraves", mood: ["happy"], genre: ["country"], url: "https://www.youtube.com/watch?v=kQ8xqyoZXCc" },
+    { title: "Toes", artist: "Zac Brown Band", mood: ["chill"], genre: ["country"], url: "https://www.youtube.com/watch?v=kD-unyd10tM" },
+    { title: "The House That Built Me", artist: "Miranda Lambert", mood: ["sad"], genre: ["country"], url: "https://www.youtube.com/watch?v=DQYNM6SjD_o" },
+    { title: "Snapback", artist: "Old Dominion", mood: ["hype"], genre: ["country"], url: "https://www.youtube.com/watch?v=FLQATzCyxfE" },
+    { title: "Tennessee Whiskey", artist: "Chris Stapleton", mood: ["romantic"], genre: ["country"], url: "https://www.youtube.com/watch?v=4zAThXFOy2c" },
+    { title: "Before He Cheats", artist: "Carrie Underwood", mood: ["angry"], genre: ["country"], url: "https://www.youtube.com/watch?v=WaSy8yy-mr8" },
+    { title: "Broken Halos", artist: "Chris Stapleton", mood: ["focused"], genre: ["country"], url: "https://www.youtube.com/watch?v=sI0TeFf6uD8" },
+    { title: "Play It Again", artist: "Luke Bryan", mood: ["happy"], genre: ["country"], url: "https://www.youtube.com/watch?v=ALV-QtDFpSw" },
+    { title: "Beer in Mexico", artist: "Kenny Chesney", mood: ["chill"], genre: ["country"], url: "https://www.youtube.com/watch?v=ofYiC1cVW3Q" },
+    { title: "Girl Crush", artist: "Little Big Town", mood: ["sad"], genre: ["country"], url: "https://www.youtube.com/watch?v=JYZMT8otKdI" },
+    { title: "Cruise", artist: "Florida Georgia Line", mood: ["hype"], genre: ["country"], url: "https://www.youtube.com/watch?v=8PvebsWcpto" },
+    { title: "Die a Happy Man", artist: "Thomas Rhett", mood: ["romantic"], genre: ["country"], url: "https://www.youtube.com/watch?v=w2CELiObPeQ" },
+    { title: "Kerosene", artist: "Miranda Lambert", mood: ["angry"], genre: ["country"], url: "https://www.youtube.com/watch?v=rB7ONnfIjaI" },
+    { title: "Turtles All the Way Down", artist: "Sturgill Simpson", mood: ["focused"], genre: ["country"], url: "https://www.youtube.com/watch?v=6gBV-Nzq7Pg" },
+    { title: "Clarity", artist: "Zedd ft. Foxes", mood: ["happy"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=IxxstCcJlsc" },
+    { title: "Innerbloom", artist: "R\u00dcF\u00dcS DU SOL", mood: ["chill"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=Tx9zMFodNtA" },
+    { title: "Bloodflows", artist: "SOHN", mood: ["sad"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=C6zv_5zGEso" },
+    { title: "Animals", artist: "Martin Garrix", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=gCYcHz2k5x0" },
+    { title: "Latch", artist: "Disclosure ft. Sam Smith", mood: ["romantic"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=93ASUImTedo" },
+    { title: "Open Eye Signal", artist: "Jon Hopkins", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=Q04ILDXe3QE" },
+    { title: "Perfect", artist: "Ed Sheeran", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=2Vv-BfVoq4g" },
+    { title: "All of Me", artist: "John Legend", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=450p7goxZqg" },
+    { title: "From The Start", artist: "Laufey", mood: ["romantic"], genre: ["pop"], url: "https://www.youtube.com/watch?v=lSD_L-xic9o" },
+    { title: "good 4 u", artist: "Olivia Rodrigo", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=gNi_6U5Pm_o" },
+    { title: "So What", artist: "P!nk", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=FJfFZqTlWrQ" },
+    { title: "Poison Poison", artist: "Reneé Rapp", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=OuxKGJA5HAM" },
+    { title: "Runaway", artist: "AURORA", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=F6dCKMoRPcQ" },
+    { title: "Strong", artist: "London Grammar", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=6drfp_3823I" },
+    { title: "Kingston", artist: "Faye Webster", mood: ["focused"], genre: ["pop"], url: "https://www.youtube.com/watch?v=-5_tGEao_GQ" },
+    { title: "Good As Hell", artist: "Lizzo", mood: ["gym"], genre: ["pop"], url: "https://www.youtube.com/watch?v=vuq-VAiW9kw" },
+    { title: "Titanium", artist: "David Guetta ft. Sia", mood: ["gym"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=YUTzQnRaw9U" },
+    { title: "Pompeii", artist: "Bastille", mood: ["gym"], genre: ["indie"], url: "https://www.youtube.com/watch?v=F90Cw4l-8NY" },
+    { title: "X Gon' Give It to Ya", artist: "DMX", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=fGx6K90TmCI" },
+    { title: "Run the World (Girls)", artist: "Beyonc\u00e9", mood: ["gym"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=VBmMU_iwe6U" },
+    { title: "Believer", artist: "Imagine Dragons", mood: ["gym"], genre: ["rock"], url: "https://www.youtube.com/watch?v=7wtfhZwyrcc" },
+    { title: "Lift Me Up", artist: "Five Finger Death Punch ft. Rob Halford", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=bLa-KyWT67E" },
+    { title: "Raise Your Glass", artist: "P!nk", mood: ["gym"], genre: ["pop"], url: "https://www.youtube.com/watch?v=XjVNlG5cZyQ" },
+    { title: "The Business", artist: "Ti\u00ebsto", mood: ["gym"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=nCg3ufihKyU" },
+    { title: "Tongue Tied", artist: "Grouplove", mood: ["gym"], genre: ["indie"], url: "https://www.youtube.com/watch?v=1x1wjGKHjBI" },
+    { title: "In Da Club", artist: "50 Cent", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=5qm8PH4xAss" },
+    { title: "Get Ur Freak On", artist: "Missy Elliott", mood: ["gym"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=FPoKiGQzbSQ" },
+    { title: "Jumpsuit", artist: "twenty one pilots", mood: ["gym"], genre: ["rock"], url: "https://www.youtube.com/watch?v=UOUBW8bkjQ4" },
+    { title: "Indestructible", artist: "Disturbed", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=aWxBrI0g1kE" },
+    { title: "This Is How We Roll", artist: "Florida Georgia Line ft. Luke Bryan", mood: ["gym"], genre: ["country"], url: "https://www.youtube.com/watch?v=CbxuXq_981s" },
+    { title: "Up", artist: "Cardi B", mood: ["gym"], genre: ["pop"], url: "https://www.youtube.com/watch?v=rCiBgLOcuKU" },
+    { title: "Alone", artist: "Marshmello", mood: ["gym"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=ALZHF5UqnU4" },
+    { title: "Something Good Can Work", artist: "Two Door Cinema Club", mood: ["gym"], genre: ["indie"], url: "https://www.youtube.com/watch?v=Wxu02vp_Vm0" },
+    { title: "goosebumps", artist: "Travis Scott ft. Kendrick Lamar", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=Dst9gZkq1a8" },
+    { title: "1, 2 Step", artist: "Ciara ft. Missy Elliott", mood: ["gym"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=iBHNgV6_znU" },
+    { title: "Hero", artist: "Skillet", mood: ["gym"], genre: ["rock"], url: "https://www.youtube.com/watch?v=uGcsIdGOuZY" },
+    { title: "Wishing Wells", artist: "Parkway Drive", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=5uwyvvxNvqQ" },
+    { title: "Hicktown", artist: "Jason Aldean", mood: ["gym"], genre: ["country"], url: "https://www.youtube.com/watch?v=DKnOlic5cDc" },
+    { title: "Stronger", artist: "Kanye West", mood: ["gym"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=oIY-lGaW-p4" },
+    { title: "Levels", artist: "Avicii", mood: ["gym"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=_ovdm2yX4MA" },
+    { title: "Roar", artist: "Katy Perry", mood: ["gym"], genre: ["pop"], url: "https://www.youtube.com/watch?v=CevxZvSJLk8" },
+    { title: "Kids", artist: "MGMT", mood: ["gym"], genre: ["indie"], url: "https://www.youtube.com/watch?v=fe4EK4HSPkI" },
+    { title: "Don't Stop the Music", artist: "Rihanna", mood: ["gym"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=yd8jh9QYfEs" },
+    { title: "Sex on Fire", artist: "Kings of Leon", mood: ["gym"], genre: ["rock"], url: "https://www.youtube.com/watch?v=RF0HhrwIwp0" },
+    { title: "Scream Aim Fire", artist: "Bullet for My Valentine", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=gqI-6xag8Mg" },
+    { title: "Save a Horse (Ride a Cowboy)", artist: "Big & Rich", mood: ["gym"], genre: ["country"], url: "https://www.youtube.com/watch?v=HflDc7PUT2g" },
+  ];
+
+  const MOODS = [
+    { id: "happy",     label: "Happy",     emoji: "\u2600\uFE0F", tint: "happy-tint",     color: "#F2B441", dim: "#4A3C1F" },
+    { id: "chill",     label: "Chill",     emoji: "\uD83C\uDF19", tint: "chill-tint",     color: "#4FA8B8", dim: "#1E3438" },
+    { id: "sad",       label: "Sad",       emoji: "\uD83C\uDF27\uFE0F", tint: "sad-tint",       color: "#6E8CB0", dim: "#24303D" },
+    { id: "hype",      label: "Hype",      emoji: "\uD83D\uDD25", tint: "hype-tint",      color: "#E85D4E", dim: "#3D211C" },
+    { id: "romantic",  label: "Romantic",  emoji: "\uD83D\uDC9E", tint: "romantic-tint",  color: "#E8899E", dim: "#3D2530" },
+    { id: "angry",     label: "Angry",     emoji: "\uD83D\uDCA2", tint: "angry-tint",     color: "#D64545", dim: "#3D1E1E" },
+    { id: "focused",   label: "Focused",   emoji: "\uD83C\uDFAF", tint: "focused-tint",   color: "#7FA98A", dim: "#223026" },
+    { id: "gym",       label: "Gym",       emoji: "\uD83D\uDCAA", tint: "gym-tint",       color: "#8BC34A", dim: "#233318" },
+  ];
+
+  const GENRES = [
+    { id: "pop", label: "Pop", emoji: "\uD83C\uDFA4" },
+    { id: "electronic", label: "Electronic", emoji: "\uD83C\uDFA7" },
+    { id: "indie", label: "Indie", emoji: "\uD83C\uDFB8" },
+    { id: "hiphop", label: "Hip-Hop", emoji: "\uD83C\uDFA4" },
+    { id: "rnb", label: "R&B/Soul", emoji: "\uD83D\uDC9C" },
+    { id: "rock", label: "Rock", emoji: "\uD83E\uDD41" },
+    { id: "metal", label: "Metal", emoji: "\uD83E\uDD18" },
+    { id: "country", label: "Country", emoji: "\uD83E\uDD20" },
+    { id: "soundtrack", label: "Game OST", emoji: "\uD83C\uDFAE" },
+  ];
+
+  let chosenMood = null;
+  let chosenIntent = null;
+
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // Paste the Google Apps Script Web App URL here once deployed, e.g.:
+  // "https://script.google.com/macros/s/AKfycb.../exec"
+  const SUGGESTION_ENDPOINT = "https://script.google.com/macros/s/AKfycby718Qg_-VBmpW4EzNFMv5-CgqEYOAaXVgcf9S9mHCprvDbt5rwbfO50Y1GlIidyrw7/exec";
+
+  function submitSuggestion() {
+    const input = document.getElementById('song-input');
+    const note = document.getElementById('suggest-note');
+    const song = input.value.trim();
+    if (!song) {
+      note.textContent = "Type a song first \uD83D\uDE42";
+      return;
+    }
+    if (SUGGESTION_ENDPOINT.indexOf('PASTE_YOUR') === 0) {
+      note.textContent = "Suggestions aren't hooked up yet \u2014 coming soon!";
+      return;
+    }
+    note.textContent = "Sending\u2026";
+    fetch(SUGGESTION_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: new URLSearchParams({ song })
+    }).then(() => {
+      note.textContent = "Sent \u2014 thank you!";
+      input.value = '';
+    }).catch(() => {
+      note.textContent = "Something went wrong \u2014 try again?";
+    });
+  }
+
+  const NAME_KEY = 'moodMachineVisitorName';
+
+  function getVisitorName() {
+    return localStorage.getItem(NAME_KEY) || '';
+  }
+
+  function nameSuffix() {
+    const name = getVisitorName();
+    return name ? `, ${name}` : '';
+  }
+
+  const QUOTES = [
+    { text: "Where words fail, music speaks.", author: "Hans Christian Andersen" },
+    { text: "Without music, life would be a mistake.", author: "Friedrich Nietzsche" },
+    { text: "Music is the shorthand of emotion.", author: "Leo Tolstoy" },
+    { text: "One good thing about music: when it hits you, you feel no pain.", author: "Bob Marley" },
+    { text: "Music can name the unnameable and communicate the unknowable.", author: "Leonard Bernstein" },
+    { text: "Music is the universal language of mankind.", author: "Henry Wadsworth Longfellow" },
+    { text: "Music gives a soul to the universe, wings to the mind.", author: "Plato" },
+    { text: "He who sings frightens away his ills.", author: "Miguel de Cervantes" },
+    { text: "Music is the emotional life of most people.", author: "Leonard Cohen" },
+    { text: "If you were music, I would listen to you ceaselessly.", author: "Anna Akhmatova" },
+    { text: "Most people die with their music still locked up inside them.", author: "Benjamin Disraeli" },
+    { text: "Philosophy is the highest music.", author: "Plato" },
+    { text: "Music, my rampart and my only one.", author: "Edna St. Vincent Millay" },
+    { text: "Who hears music feels his solitude peopled at once.", author: "Robert Browning" },
+    { text: "Music is my religion.", author: "Jimi Hendrix" },
+    { text: "Music is well said to be the speech of angels.", author: "Thomas Carlyle" },
+    { text: "There is no truer truth obtainable by man than comes of music.", author: "Robert Browning" },
+    { text: "Where words leave off, music begins.", author: "Heinrich Heine" },
+    { text: "Music produces a kind of pleasure human nature cannot do without.", author: "Confucius" },
+    { text: "The world's most famous and popular language is music.", author: "Psy" },
+    { text: "My ambition was to live like music.", author: "Mary Gaitskill" },
+    { text: "To stop the flow of music would be like stopping time itself.", author: "Aaron Copland" },
+    { text: "Music can change the world because it can change people.", author: "Bono" },
+    { text: "Music washes away from the soul the dust of everyday life.", author: "Berthold Auerbach" },
+    { text: "If music be the food of love, play on.", author: "William Shakespeare" },
+    { text: "Music is the wine that fills the cup of silence.", author: "Robert Fripp" },
+    { text: "A jazz musician is a juggler who uses harmonies instead of oranges.", author: "Benny Green" },
+    { text: "After silence, that which comes nearest to expressing the inexpressible is music.", author: "Aldous Huxley" },
+    { text: "Music is the divine way to tell beautiful things to the heart.", author: "Pablo Casals" },
+    { text: "Without deviation from the norm, progress is not possible.", author: "Frank Zappa" },
+    { text: "Hell is full of musical amateurs.", author: "George Bernard Shaw" },
+    { text: "There are only two kinds of music: good music, and bad music.", author: "Duke Ellington" },
+    { text: "Nobody cares if you can't dance well. Just get up and dance.", author: "Dave Barry" },
+    { text: "Never give a sword to a man who can't dance.", author: "Confucius" },
+    { text: "Dancing is like dreaming with your feet.", author: "Constanze Mozart" },
+    { text: "The one thing that can solve most of our problems is dancing.", author: "James Brown" },
+    { text: "No one dances sober, unless he is insane.", author: "Cicero" },
+    { text: "There are shortcuts to happiness, and dancing is one of them.", author: "Vicki Baum" },
+    { text: "Dancing is the poetry of the foot.", author: "John Dryden" },
+    { text: "Dance for yourself. If someone understands, good. If not, no matter.", author: "Louis Horst" },
+    { text: "I don't always dance, but when I do, I pretend no one's watching.", author: "Anonymous" },
+    { text: "Talking about music is like dancing about architecture.", author: "Widely quoted, true source disputed" },
+    { text: "Singing is like a celebration of oxygen.", author: "Bj\u00f6rk" },
+    { text: "Singing is an expression of the soul.", author: "Pl\u00e1cido Domingo" },
+    { text: "God respects me when I work, but he loves me when I sing.", author: "Rabindranath Tagore" },
+    { text: "Singing provides a true sense of lightheartedness.", author: "Andrea Bocelli" },
+    { text: "Your voice is your identity. Never be afraid to express yourself.", author: "Christina Aguilera" },
+    { text: "Sing as if no one is listening, because they probably aren't.", author: "Bob Marley" },
+    { text: "Music is the soundtrack of your life.", author: "D. Clark" },
+    { text: "Everything in the universe has a rhythm; everything dances.", author: "Maya Angelou" },
+    { text: "Singing is like loving somebody \u2014 a supreme emotional and physical experience.", author: "Janis Joplin" },
+    { text: "The heart has its reasons, of which reason knows nothing.", author: "Blaise Pascal" },
+    { text: "Life isn't about finding yourself. Life is about creating yourself.", author: "George Bernard Shaw" },
+    { text: "The best thing to hold onto in life is each other.", author: "Audrey Hepburn" },
+    { text: "Sometimes the heart sees what is invisible to the eye.", author: "H. Jackson Brown Jr." },
+    { text: "Feelings buried alive never die.", author: "Alice Miller" },
+    { text: "One thing you can't hide is when you're crippled inside.", author: "John Lennon" },
+    { text: "The purpose of our lives is to be happy.", author: "Dalai Lama" },
+    { text: "My feelings are too loud for words and too shy for the world.", author: "Anonymous" },
+    { text: "Life is really simple, but we insist on making it complicated.", author: "Confucius" },
+    { text: "Music is the poetry of the air.", author: "Jean Paul" },
+    { text: "Music is enough for a lifetime, but a lifetime is not enough for music.", author: "Sergei Rachmaninoff" },
+    { text: "A painter paints pictures on canvas. But musicians paint their pictures on silence.", author: "Leopold Stokowski" },
+    { text: "Music is the mediator between the spiritual and the sensual life.", author: "Ludwig van Beethoven" },
+    { text: "The only truth is music.", author: "Jack Kerouac" },
+    { text: "Music is a higher revelation than all wisdom and philosophy.", author: "Ludwig van Beethoven" },
+    { text: "Music is the art of thinking with sounds.", author: "Jules Combarieu" },
+    { text: "Music is a safe kind of high.", author: "Jimi Hendrix" },
+    { text: "Without music, I don't think I would enjoy life as much.", author: "B.B. King" },
+    { text: "Rhythm and harmony find their way into the inward places of the soul.", author: "Plato" },
+    { text: "I don't know anything about music. In my line, you don't have to.", author: "Elvis Presley" },
+    { text: "I don't sing because I'm happy; I'm happy because I sing.", author: "William James" },
+    { text: "If it sounds good, it is good.", author: "Duke Ellington" },
+    { text: "Jazz is not just music, it's a way of life.", author: "Nina Simone" },
+    { text: "I don't make music for eyes. I make music for ears.", author: "Adele" },
+    { text: "Rap is something you do; hip-hop is something you live.", author: "KRS-One" },
+    { text: "I'd rather be a musician than a rock star.", author: "George Harrison" },
+    { text: "I smash guitars because I like them.", author: "Pete Townshend" },
+    { text: "Jazz is not dead, it just smells funny.", author: "Frank Zappa" },
+    { text: "Classical music is the kind we keep thinking will turn into a tune.", author: "Kin Hubbard" },
+    { text: "The piano has been drinking, not me.", author: "Tom Waits" },
+    { text: "A gentleman is someone who can play the accordion, but doesn't.", author: "Tom Waits" },
+    { text: "Music is moonlight in the gloomy night of life.", author: "Jean Paul" },
+    { text: "All music is folk music. I ain't never heard a horse sing a song.", author: "Louis Armstrong" },
+    { text: "Of all the noises, music is the least disagreeable.", author: "Samuel Johnson" },
+    { text: "There are two golden rules for an orchestra: start together and finish together.", author: "Thomas Beecham" },
+    { text: "The piano ain't got no wrong notes.", author: "Thelonious Monk" },
+    { text: "I can't listen to much Wagner \u2014 I get the urge to conquer Poland.", author: "Woody Allen" },
+    { text: "Turn your wounds into wisdom.", author: "Oprah Winfrey" },
+    { text: "Silence is sometimes the best answer.", author: "Dalai Lama" },
+    { text: "The wound is the place where the light enters you.", author: "Rumi" },
+    { text: "This too shall pass.", author: "Persian proverb" },
+    { text: "Not all those who wander are lost.", author: "J.R.R. Tolkien" },
+    { text: "The unexamined life is not worth living.", author: "Socrates" },
+    { text: "Do one thing every day that scares you.", author: "Eleanor Roosevelt" },
+    { text: "Turn your face to the sun and the shadows fall behind you.", author: "M\u0101ori proverb" },
+    { text: "You can't use up creativity. The more you use, the more you have.", author: "Maya Angelou" },
+    { text: "A day without laughter is a day wasted.", author: "Charlie Chaplin" },
+    { text: "You only live once, but if you do it right, once is enough.", author: "Mae West" },
+    { text: "Without music, life would be a blank to me.", author: "Jane Austen, Emma" },
+  ];
+
+  const PLAYER_KEY = 'moodMachinePlayer';
+
+  function getPlayerPref() {
+    return localStorage.getItem(PLAYER_KEY) || 'youtube';
+  }
+
+  function setPlayer(choice) {
+    localStorage.setItem(PLAYER_KEY, choice);
+    initPlayer();
+  }
+
+  function changePlayer() {
+    localStorage.removeItem(PLAYER_KEY);
+    initPlayer();
+  }
+
+  function initPlayer() {
+    const hasChosen = !!localStorage.getItem(PLAYER_KEY);
+    const pref = getPlayerPref();
+    const capture = document.getElementById('player-capture');
+    const note = document.getElementById('player-note');
+    const label = pref === 'apple' ? 'Apple Music' : 'YouTube';
+
+    if (hasChosen) {
+      capture.style.display = 'none';
+      note.style.display = 'block';
+      note.innerHTML = `Using ${label} \u2014 <a href="#" onclick="changePlayer(); return false;" style="color:inherit;">change</a>`;
+    } else {
+      capture.style.display = 'block';
+      note.style.display = 'none';
+    }
+  }
+
+  // Builds the right link + label for the reveal screen's open button,
+  // based on the visitor's player preference. Apple Music has no per-track
+  // ID in our data, so it links to a search for the exact title + artist.
+  function buildOpenLink(song) {
+    const pref = getPlayerPref();
+    if (pref === 'apple') {
+      const query = encodeURIComponent(`${song.artist} ${song.title}`);
+      return { href: `https://music.apple.com/search?term=${query}`, label: 'Search on Apple Music' };
+    }
+    return { href: song.url, label: 'Open on YouTube' };
+  }
+
+  function initWelcome() {
+    const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    const quoteEl = document.getElementById('welcome-quote');
+    if (quoteEl) {
+      quoteEl.innerHTML = `\u201c${quote.text}\u201d <span class="quote-author">\u2014 ${quote.author}</span>`;
+    }
+    const name = getVisitorName();
+    const heading = document.getElementById('welcome-heading');
+    const capture = document.getElementById('name-capture');
+    const note = document.getElementById('returning-note');
+    const intentH1 = document.getElementById('intent-h1');
+
+    if (name) {
+      heading.textContent = `Hey ${name}, welcome back.`;
+      capture.style.display = 'none';
+      note.style.display = 'block';
+      note.innerHTML = `<a href="#" onclick="resetVisitorName(); return false;" style="color:inherit;">Not ${name}? Reset</a>`;
+      intentH1.textContent = `What are we picking for, ${name}?`;
+    } else {
+      heading.textContent = 'Hey, welcome.';
+      capture.style.display = 'block';
+      note.style.display = 'none';
+      intentH1.textContent = 'What are we picking for?';
+    }
+  }
+
+  function saveVisitorName() {
+    const input = document.getElementById('name-input');
+    const name = input.value.trim();
+    if (!name) return;
+    localStorage.setItem(NAME_KEY, name);
+    try {
+      initWelcome();
+    } catch (e) {
+      console.error('initWelcome failed after saving name:', e);
+    }
+  }
+
+  function skipName() {
+    document.getElementById('name-capture').style.display = 'none';
+  }
+
+  function resetVisitorName() {
+    localStorage.removeItem(NAME_KEY);
+    initWelcome();
+  }
+
+  function selectIntent(intent) {
+    chosenIntent = intent;
+    document.getElementById('mood-h1').textContent = intent === 'feel'
+      ? `What's the vibe right now${nameSuffix()}?`
+      : `What vibe do you want instead${nameSuffix()}?`;
+    goTo('step-mood');
+  }
+
+  function showSongOfMoment() {
+    // Deterministic pick seeded by today's date (UTC days since epoch),
+    // so everyone gets the same track on a given day, and it changes at midnight.
+    const daysSinceEpoch = Math.floor(Date.now() / 86400000);
+    const pick = SONGS[daysSinceEpoch % SONGS.length];
+
+    document.documentElement.style.setProperty('--accent', '#E8899E');
+    document.documentElement.style.setProperty('--accent-dim', '#3D2530');
+
+    goTo('reveal');
+    document.getElementById('found-card').classList.remove('show');
+    document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
+
+    setTimeout(() => {
+      document.getElementById('reveal-title').textContent = `Today's pick${nameSuffix()}`;
+      document.getElementById('found-track').textContent = pick.title;
+      document.getElementById('found-artist').textContent = pick.artist;
+      const link = buildOpenLink(pick);
+      const linkEl = document.getElementById('open-link');
+      linkEl.href = link.href;
+      linkEl.textContent = link.label;
+      document.getElementById('found-card').classList.add('show');
+    }, 1100);
+  }
+
+  function renderMoods() {
+    const grid = document.getElementById('mood-grid');
+    grid.innerHTML = '';
+    MOODS.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = `option ${m.tint}`;
+      btn.innerHTML = `<span class="emoji">${m.emoji}</span>${m.label}`;
+      btn.onclick = () => selectMood(m);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectMood(mood) {
+    chosenMood = mood;
+    document.documentElement.style.setProperty('--accent', mood.color);
+    document.documentElement.style.setProperty('--accent-dim', mood.dim);
+    document.getElementById('mood-pill-label').textContent = mood.label;
+    renderGenres();
+    goTo('step-genre');
+  }
+
+  function renderGenres() {
+    const grid = document.getElementById('genre-grid');
+    grid.innerHTML = '';
+    GENRES.forEach(g => {
+      const btn = document.createElement('button');
+      btn.className = `option ${chosenMood.tint}`;
+      btn.innerHTML = `<span class="emoji">${g.emoji}</span>${g.label}`;
+      btn.onclick = () => selectGenre(g);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectGenre(genre) {
+    // Try exact mood + genre match first.
+    let pool = SONGS.filter(s => s.mood.includes(chosenMood.id) && s.genre.includes(genre.id));
+    // Fallback: widen to mood-only if the exact combo is thin.
+    if (pool.length === 0) {
+      pool = SONGS.filter(s => s.mood.includes(chosenMood.id));
+    }
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+
+    goTo('reveal');
+    document.getElementById('found-card').classList.remove('show');
+    document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
+
+    setTimeout(() => {
+      document.getElementById('reveal-title').textContent = `Found one${nameSuffix()}`;
+      document.getElementById('found-track').textContent = pick.title;
+      document.getElementById('found-artist').textContent = pick.artist;
+      const link = buildOpenLink(pick);
+      const linkEl = document.getElementById('open-link');
+      linkEl.href = link.href;
+      linkEl.textContent = link.label;
+      document.getElementById('found-card').classList.add('show');
+    }, 1100);
+  }
+
+  try { initWelcome(); } catch (e) { console.error('initWelcome failed:', e); }
+  try { initPlayer(); } catch (e) { console.error('initPlayer failed:', e); }
+  try { renderMoods(); } catch (e) { console.error('renderMoods failed:', e); }
+
+  // Neon proximity glow: intensity grows the closer the pointer gets
+  // to the button's center, works on dynamically-rendered buttons too.
+  (function () {
+    const glowSelector = 'button.option, .open-btn, .suggest-btn';
+
+    document.addEventListener('pointermove', (e) => {
+      const btn = e.target.closest(glowSelector);
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const px = (x / rect.width) * 100;
+      const py = (y / rect.height) * 100;
+      const dx = (x - rect.width / 2) / (rect.width / 2);
+      const dy = (y - rect.height / 2) / (rect.height / 2);
+      const dist = Math.min(1, Math.sqrt(dx * dx + dy * dy));
+      const intensity = (1 - dist) * 0.55; // subtle ceiling, not blinding
+      btn.style.setProperty('--gx', px + '%');
+      btn.style.setProperty('--gy', py + '%');
+      btn.style.setProperty('--glow-o', intensity.toFixed(2));
+    });
+
+    document.addEventListener('pointerout', (e) => {
+      const btn = e.target.closest(glowSelector);
+      if (btn) btn.style.setProperty('--glow-o', 0);
+    });
+  })();
+
+  // Icon focus effect — desktop/mouse devices only (skipped on touch).
+  // Background icons sit slightly blurred by default; icons near the
+  // cursor sharpen into focus, like a camera racking focus toward the mouse.
+  (function () {
+    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!isDesktop) return;
+
+    const DEFAULT_BLUR = 1.2;   // px, resting blur for icons far from the cursor
+    const FOCUS_RADIUS = 160;   // px, distance within which icons sharpen
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let hasMoved = false;
+    const lens = document.getElementById('lens');
+
+    window.addEventListener('pointermove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      hasMoved = true;
+    });
+
+    function updateFocus() {
+      const icons = document.querySelectorAll('.bg-floaters span');
+      icons.forEach(icon => {
+        if (!hasMoved) {
+          icon.style.setProperty('--focus-blur', DEFAULT_BLUR + 'px');
+          return;
+        }
+        const rect = icon.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dist = Math.hypot(cx - mouseX, cy - mouseY);
+        const t = Math.min(1, dist / FOCUS_RADIUS);
+        icon.style.setProperty('--focus-blur', (t * DEFAULT_BLUR).toFixed(2) + 'px');
+      });
+
+      if (hasMoved) {
+        document.documentElement.style.setProperty('--mx', mouseX + 'px');
+        document.documentElement.style.setProperty('--my', mouseY + 'px');
+        lens.classList.add('active');
+      }
+
+      requestAnimationFrame(updateFocus);
+    }
+    updateFocus();
+  })();
+</script>
+
+</body>
+</html>
