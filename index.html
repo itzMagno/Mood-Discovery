@@ -639,7 +639,21 @@
   <div class="grid single">
     <button class="option" onclick="selectIntent('feel')"><span class="emoji">🎭</span>How are you feeling right now?</button>
     <button class="option" onclick="selectIntent('want')"><span class="emoji">✨</span>How do you want to feel instead?</button>
+    <button class="option" onclick="goTo('step-describe')"><span class="emoji">📝</span>Tell me what's going on</button>
     <button class="option" onclick="showSongOfMoment()"><span class="emoji">🎵</span>Song of the moment</button>
+  </div>
+</div>
+
+<!-- STEP: DESCRIBE YOUR MOMENT -->
+<div class="screen" id="step-describe">
+  <button class="back" onclick="goTo('step-intent')">&larr; back</button>
+  <p class="kicker">Set the scene</p>
+  <h1>What's happening right now?</h1>
+  <p>A sentence is enough &mdash; "it's raining and I'm driving home," "pulling an all-nighter studying," whatever's true right now.</p>
+  <div class="suggest-box">
+    <input type="text" id="describe-input" class="suggest-input" placeholder="e.g. it's raining and I'm driving home" />
+    <button class="suggest-btn" onclick="findSongForMoment()">Find my song</button>
+    <p class="suggest-note" id="describe-note"></p>
   </div>
 </div>
 
@@ -1431,6 +1445,90 @@
       ? `What's the vibe right now${nameSuffix()}?`
       : `What vibe do you want instead${nameSuffix()}?`;
     goTo('step-mood');
+  }
+
+  // Keyword -> mood scoring. Not real language understanding \u2014 this is a
+  // static site with no backend/AI call, so it's a weighted keyword match
+  // against the same 8 moods the rest of the app already uses.
+  const MOOD_KEYWORDS = {
+    happy:    ['happy', 'excited', 'celebrat', 'sunny', 'sunshine', 'laugh', 'joy', 'smile', 'good mood', 'great day', 'morning'],
+    chill:    ['rain', 'raining', 'rainy', 'relax', 'chill', 'calm', 'cozy', 'evening', 'unwind', 'lazy', 'quiet', 'cruis', 'window seat', 'coffee'],
+    sad:      ['sad', 'cry', 'crying', 'alone', 'lonely', 'breakup', 'broke up', 'miss', 'missing', 'heartbrok', 'down', 'depress', 'hurt'],
+    hype:     ['party', 'dancing', 'dance', 'rave', 'festival', 'pumped', 'hype', 'adrenaline', 'friends over', 'game day'],
+    romantic: ['love', 'date', 'crush', 'romantic', 'valentine', 'kissing', 'anniversary', 'my girlfriend', 'my boyfriend', 'together'],
+    angry:    ['angry', 'mad', 'furious', 'frustrated', 'rage', 'annoyed', 'pissed', 'traffic', 'argument', 'fight'],
+    focused:  ['study', 'studying', 'work', 'working', 'homework', 'focus', 'concentrat', 'deadline', 'coding', 'writing', 'exam', 'reading'],
+    gym:      ['gym', 'workout', 'lifting', 'running', 'run', 'cardio', 'exercise', 'training', 'sprint', 'sweat'],
+  };
+
+  // Optional genre nudge \u2014 only applied when it clearly fits, otherwise
+  // the search stays mood-only across every genre like the normal flow.
+  const GENRE_HINTS = [
+    { keywords: ['driving', 'drive', 'car', 'road trip', 'highway', 'road'], genre: 'electronic' },
+    { keywords: ['study', 'studying', 'coding', 'homework', 'exam', 'reading'], genre: 'soundtrack' },
+    { keywords: ['gym', 'workout', 'lifting', 'running', 'cardio', 'training'], genre: 'metal' },
+    { keywords: ['party', 'dancing', 'rave', 'festival'], genre: 'electronic' },
+  ];
+
+  function findSongForMoment() {
+    const input = document.getElementById('describe-input');
+    const note = document.getElementById('describe-note');
+    const text = input.value.trim().toLowerCase();
+    if (!text) {
+      note.textContent = "Type a little about what's going on first \uD83D\uDE42";
+      return;
+    }
+
+    // Score each mood by how many of its keywords appear in the text.
+    let bestMood = null;
+    let bestScore = 0;
+    MOODS.forEach(m => {
+      const keywords = MOOD_KEYWORDS[m.id] || [];
+      const score = keywords.reduce((acc, kw) => acc + (text.includes(kw) ? 1 : 0), 0);
+      if (score > bestScore) {
+        bestScore = score;
+        bestMood = m;
+      }
+    });
+    // No keywords matched at all \u2014 fall back to a random mood rather
+    // than guessing wrong with high confidence.
+    if (!bestMood) {
+      bestMood = MOODS[Math.floor(Math.random() * MOODS.length)];
+    }
+
+    // Check for a genre hint on top of the mood match.
+    let hintGenre = null;
+    for (const hint of GENRE_HINTS) {
+      if (hint.keywords.some(kw => text.includes(kw))) {
+        hintGenre = hint.genre;
+        break;
+      }
+    }
+
+    chosenMood = bestMood;
+    document.documentElement.style.setProperty('--accent', bestMood.color);
+    document.documentElement.style.setProperty('--accent-dim', bestMood.dim);
+
+    let pool = SONGS.filter(s => s.mood.includes(bestMood.id) && (!hintGenre || s.genre.includes(hintGenre)));
+    if (pool.length === 0) {
+      pool = SONGS.filter(s => s.mood.includes(bestMood.id));
+    }
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+
+    goTo('reveal');
+    document.getElementById('found-card').classList.remove('show');
+    document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
+
+    setTimeout(() => {
+      document.getElementById('reveal-title').textContent = `Felt like a ${bestMood.label.toLowerCase()} moment${nameSuffix()}`;
+      document.getElementById('found-track').textContent = pick.title;
+      document.getElementById('found-artist').textContent = pick.artist;
+      const link = buildOpenLink(pick);
+      const linkEl = document.getElementById('open-link');
+      linkEl.href = link.href;
+      linkEl.textContent = link.label;
+      document.getElementById('found-card').classList.add('show');
+    }, 1100);
   }
 
   function showSongOfMoment() {
