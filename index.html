@@ -502,6 +502,30 @@
     font-style: italic;
   }
 
+  .suggestion-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid #29293580;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .suggestion-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    color: var(--text);
+  }
+
+  .suggestion-artist {
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
   .again-btn {
     display: block;
     width: 100%;
@@ -589,6 +613,7 @@
     <button class="suggest-btn" onclick="submitSuggestion()">Send suggestion</button>
     <p class="suggest-note" id="suggest-note"></p>
   </div>
+  <p class="tiny-note" style="margin-bottom: 20px;"><a href="#" onclick="goTo('step-suggestions'); return false;" style="color:inherit; text-decoration:underline;">See the last suggestions that made it in &rarr;</a></p>
   <p class="tagline">Discover. Feel. Repeat.</p>
   <button class="open-btn" onclick="goTo('step-intent')">Let's go</button>
 
@@ -596,6 +621,15 @@
     <p id="player-note" class="inline-note" style="display:none;"></p>
     <p id="returning-note" class="inline-note" style="display:none;"></p>
   </div>
+</div>
+
+<!-- STEP: RECENT SUGGESTIONS -->
+<div class="screen" id="step-suggestions">
+  <button class="back" onclick="goTo('step-welcome')">&larr; back</button>
+  <p class="kicker">Community picks</p>
+  <h1>Made it in recently</h1>
+  <p>Songs people suggested that got added to the pool. Just titles &mdash; who sent them stays private.</p>
+  <div id="suggestions-list"></div>
 </div>
 
 <!-- STEP 0: INTENT -->
@@ -641,7 +675,7 @@
   </div>
 </div>
 
-<footer>discovery pool &middot; 461 tracks &middot; growing</footer>
+<footer>discovery pool &middot; 462 tracks &middot; growing</footer>
 
 <script>
   // ---- SONG DATABASE ----
@@ -821,6 +855,7 @@
     { title: "METAMORPHOSIS", artist: "INTERWORLD", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=lJvRohYSrZM" },
     { title: "RAVE", artist: "Dxrk \u30c0\u30fc\u30af", mood: ["angry"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=PTZgxW_3LIQ" },
     { title: "NEON BLADE", artist: "MoonDeity", mood: ["gym"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=gfIb3nMjXgg" },
+    { title: "Obvious", artist: "Chris Brown", mood: ["romantic"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=EnZAqRInevs" },
     { title: "Inner Light", artist: "Bungie (Destiny 2 OST)", mood: ["happy"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=4jQ_NbelyZE" },
     { title: "Lumi\u00e8re (feat. Alice Duport-Percier)", artist: "Lorien Testard (Clair Obscur: Expedition 33 OST)", mood: ["romantic"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=LpNVf8sczqU" },
     { title: "BB's Theme (feat. Jenny Plant)", artist: "Ludvig Forssell (Death Stranding OST)", mood: ["chill"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=Ghk1RFr51xo" },
@@ -1135,6 +1170,14 @@
     { id: "soundtrack", label: "Game OST", emoji: "\uD83C\uDFAE" },
   ];
 
+  // Songs that came in through the anonymous suggestion box and made it
+  // into the pool. Most recent first, capped at 10. No submitter info here
+  // by design \u2014 this is a public list, just title + artist.
+  const RECENT_SUGGESTIONS = [
+    { title: "Obvious", artist: "Chris Brown" },
+    { title: "Float Away", artist: "Neovaii" },
+  ];
+
   let chosenMood = null;
   let chosenIntent = null;
 
@@ -1415,6 +1458,18 @@
     }, 1100);
   }
 
+  function renderSuggestions() {
+    const list = document.getElementById('suggestions-list');
+    if (!list) return;
+    if (RECENT_SUGGESTIONS.length === 0) {
+      list.innerHTML = '<p class="suggest-note">Nothing yet \u2014 be the first!</p>';
+      return;
+    }
+    list.innerHTML = RECENT_SUGGESTIONS.slice(0, 10).map(s =>
+      `<div class="suggestion-row"><span class="suggestion-title">${s.title}</span><span class="suggestion-artist">${s.artist}</span></div>`
+    ).join('');
+  }
+
   function renderMoods() {
     const grid = document.getElementById('mood-grid');
     grid.innerHTML = '';
@@ -1476,6 +1531,7 @@
   try { initWelcome(); } catch (e) { console.error('initWelcome failed:', e); }
   try { initPlayer(); } catch (e) { console.error('initPlayer failed:', e); }
   try { renderMoods(); } catch (e) { console.error('renderMoods failed:', e); }
+  try { renderSuggestions(); } catch (e) { console.error('renderSuggestions failed:', e); }
 
   // Neon proximity glow: intensity grows the closer the pointer gets
   // to the button's center, works on dynamically-rendered buttons too.
