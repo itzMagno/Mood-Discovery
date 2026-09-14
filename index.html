@@ -760,13 +760,13 @@
       <p class="label" id="now-playing-label">Now playing</p>
       <p class="track" id="found-track"></p>
       <p class="artist" id="found-artist"></p>
-      <a class="open-btn" id="open-link" href="#" target="_blank" rel="noopener">Open on YouTube</a>
+      <a class="open-btn" id="open-link" href="#">Open on YouTube</a>
       <button class="again-btn" id="start-over-btn" onclick="goTo('step-intent')">Start over</button>
     </div>
   </div>
 </div>
 
-<footer id="footer-text">discovery pool &middot; 462 tracks &middot; growing</footer>
+<footer id="footer-text">discovery pool &middot; 487 tracks &middot; growing</footer>
 
 <script>
   // ---- SONG DATABASE ----
@@ -950,6 +950,8 @@
     { title: "Inner Light", artist: "Bungie (Destiny 2 OST)", mood: ["happy"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=4jQ_NbelyZE" },
     { title: "Lumi\u00e8re (feat. Alice Duport-Percier)", artist: "Lorien Testard (Clair Obscur: Expedition 33 OST)", mood: ["romantic"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=LpNVf8sczqU" },
     { title: "BB's Theme (feat. Jenny Plant)", artist: "Ludvig Forssell (Death Stranding OST)", mood: ["chill"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=Ghk1RFr51xo" },
+    { title: "Beneath the Mask (feat. Lyn)", artist: "Shoji Meguro (Persona 5 OST)", mood: ["romantic"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=woz5qvDdMRM" },
+    { title: "Good Riddance (Eurydice Solo)", artist: "Darren Korb (Hades OST)", mood: ["happy"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=DrkTe3Tc7Jg" },
     { title: "Hollow Knight (Main Theme)", artist: "Christopher Larkin (Hollow Knight OST)", mood: ["sad"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=r6PuACnHkNY" },
     { title: "Reach for the Summit", artist: "Lena Raine (Celeste OST)", mood: ["happy"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=qx1PcEgmFHY" },
     { title: "Floral Fury", artist: "Kristofer Maddigan (Cuphead OST)", mood: ["hype"], genre: ["soundtrack"], url: "https://www.youtube.com/watch?v=2clUY-OsCpY" },
@@ -1010,6 +1012,29 @@
     { title: "Redneck", artist: "Lamb of God", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=oqdZpxkzNvc" },
     { title: "Lola Montez", artist: "Volbeat", mood: ["focused"], genre: ["metal"], url: "https://www.youtube.com/watch?v=GWOIDN-akrY" },
     { title: "Undead", artist: "Hollywood Undead", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=CCVvq4g4Qj0" },
+    { title: "Zombie", artist: "Bad Wolves", mood: ["sad"], genre: ["metal"], url: "https://www.youtube.com/watch?v=9XaS93WMRQQ" },
+    { title: "Circle With Me", artist: "Spiritbox", mood: ["hype"], genre: ["metal"], url: "https://www.youtube.com/watch?v=I0WzT0OJ-E0" },
+    { title: "Who I Am", artist: "Wage War", mood: ["gym"], genre: ["metal"], url: "https://www.youtube.com/watch?v=zKYL0WXVaTs" },
+    { title: "Mistakes Like Fractures", artist: "Knocked Loose", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=jOB3IYBcJEE" },
+    { title: "Hrs & Hrs", artist: "Muni Long", mood: ["romantic"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=okfR_VIbXEQ" },
+    { title: "ICU", artist: "Coco Jones", mood: ["sad"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=qEb78X0xSVY" },
+    { title: "Too Sweet", artist: "Hozier", mood: ["happy"], genre: ["rock"], url: "https://www.youtube.com/watch?v=NTpbbQUBbuo" },
+    { title: "End of Beginning", artist: "Djo", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=Kf5pXDhx5Vc" },
+    { title: "delusional", artist: "Ken Carson", mood: ["hype"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=gpbQ4A4tQuU" },
+    { title: "Good Luck, Babe!", artist: "Chappell Roan", mood: ["angry"], genre: ["pop"], url: "https://www.youtube.com/watch?v=1RKqOmSkGgM" },
+    { title: "Please Please Please", artist: "Sabrina Carpenter", mood: ["happy"], genre: ["pop"], url: "https://www.youtube.com/watch?v=sxSkFwyEtpA" },
+    { title: "Run The World", artist: "Rare Americans", mood: ["gym"], genre: ["rock"], url: "https://www.youtube.com/watch?v=RNrYMTp0ReQ" },
+    { title: "BLACKOUT", artist: "Turnstile", mood: ["hype"], genre: ["rock"], url: "https://www.youtube.com/watch?v=YtGRLKVzzdg" },
+    { title: "Passing Judgment", artist: "Been Stellar", mood: ["angry"], genre: ["indie"], url: "https://www.youtube.com/watch?v=9E4dtb1Y4PA" },
+    { title: "Freak Boy", artist: "Genesis Owusu", mood: ["hype"], genre: ["indie"], url: "https://www.youtube.com/watch?v=NA2gmbvaGMc" },
+    { title: "Starburster", artist: "Fontaines D.C.", mood: ["angry"], genre: ["rock"], url: "https://www.youtube.com/watch?v=KHocVRUlvkk" },
+    { title: "Anxiety", artist: "Doechii", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=riCP9x31Kuk" },
+    { title: "Salvation", artist: "Rebecca Black", mood: ["hype"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=lLBPrAJf52E" },
+    { title: "Edge", artist: "REZZ", mood: ["focused"], genre: ["electronic"], url: "https://www.youtube.com/watch?v=2oIAQSUt9mo" },
+    { title: "Your Face", artist: "Wisp", mood: ["romantic"], genre: ["metal"], url: "https://www.youtube.com/watch?v=hbwyCQo2xDc" },
+    { title: "Aggressive Evolution", artist: "Loathe", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=mGcb28aqJjo" },
+    { title: "Halloweenie", artist: "Ashnikko", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=iqSt1ZS_Znw" },
+    { title: "Champagne Coast", artist: "Blood Orange", mood: ["chill"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=nO6y1-erVEw" },
     { title: "Glow Like Dat", artist: "Rich Brian", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=adDD43CvrUc" },
     { title: "Hair Down (feat. Kendrick Lamar)", artist: "SiR", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=BQqEMLOOMCo" },
     { title: "Topanga", artist: "Trippie Redd", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=qE4Z0KfzpE8" },
@@ -1695,6 +1720,20 @@
     // the domain \u2014 opens/plays in the YouTube Music app or site instead
     // of regular YouTube.
     const ytMusicUrl = song.url.replace('://www.youtube.com', '://music.youtube.com').replace('://youtube.com', '://music.youtube.com');
+
+    // A plain https:// link doesn't reliably hand off to the YouTube Music
+    // app on Android even when it's installed \u2014 it needs an explicit
+    // "intent" URL telling Android which app package to launch, with a
+    // fallback to the normal web link if the app isn't there.
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    if (isAndroid) {
+      const videoIdMatch = ytMusicUrl.match(/[?&]v=([^&]+)/);
+      const path = videoIdMatch ? `watch?v=${videoIdMatch[1]}` : '';
+      const fallback = encodeURIComponent(ytMusicUrl);
+      const intentUrl = `intent://music.youtube.com/${path}#Intent;scheme=https;package=com.google.android.apps.youtube.music;S.browser_fallback_url=${fallback};end;`;
+      return { href: intentUrl, label: t('open-youtube-btn') };
+    }
+
     return { href: ytMusicUrl, label: t('open-youtube-btn') };
   }
 
