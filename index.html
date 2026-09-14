@@ -6,7 +6,7 @@
 <title>What's the vibe?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;600&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #0D0D12;
@@ -144,6 +144,78 @@
   @keyframes rise {
     from { opacity: 0; transform: translateY(14px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  .lang-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    gap: 4px;
+    z-index: 3;
+  }
+
+  html[dir="rtl"] .lang-toggle {
+    right: auto;
+    left: 0;
+  }
+
+  .lang-btn {
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid #29293580;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+
+  .lang-btn.active {
+    color: var(--text);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .screen {
+    position: relative;
+  }
+
+  /* Arabic layout: RTL flow + Arabic-friendly font */
+  html[dir="rtl"] body {
+    font-family: 'Tajawal', 'Space Grotesk', sans-serif;
+  }
+
+  html[dir="rtl"] h1,
+  html[dir="rtl"] .quote {
+    font-family: 'Tajawal', 'Fraunces', serif;
+  }
+
+  html[dir="rtl"] .screen {
+    text-align: right;
+  }
+
+  html[dir="rtl"] #reveal,
+  html[dir="rtl"] .reveal-visual {
+    text-align: center;
+  }
+
+  html[dir="rtl"] .back {
+    align-self: flex-end;
+  }
+
+  html[dir="rtl"] .mood-pill {
+    flex-direction: row-reverse;
+  }
+
+  html[dir="rtl"] button.option {
+    text-align: right;
+  }
+
+  html[dir="rtl"] .suggestion-row {
+    flex-direction: row-reverse;
   }
 
   .kicker {
@@ -574,48 +646,53 @@
 
 <!-- STEP -1: WELCOME -->
 <div class="screen active" id="step-welcome">
-  <p class="kicker">You found it</p>
+  <div class="lang-toggle">
+    <button onclick="setLanguage('en')" id="lang-btn-en" class="lang-btn">EN</button>
+    <button onclick="setLanguage('ar')" id="lang-btn-ar" class="lang-btn">AR</button>
+  </div>
+  <p class="kicker" id="welcome-kicker">You found it</p>
   <h1 id="welcome-heading">Hey, welcome.</h1>
   <p class="quote" id="welcome-quote"></p>
 
   <div id="name-capture">
-    <p>What should I call you?</p>
+    <p id="name-question">What should I call you?</p>
     <div class="suggest-box">
       <input type="text" id="name-input" class="suggest-input" placeholder="Your name" />
-      <button class="suggest-btn" onclick="saveVisitorName()">That's me</button>
-      <p class="suggest-note" id="name-note">Totally optional, and you can <a href="#" onclick="skipName(); return false;" style="color:inherit;">skip it</a>. It'll just say "hey" instead.</p>
+      <button class="suggest-btn" id="name-btn" onclick="saveVisitorName()">That's me</button>
+      <p class="suggest-note" id="name-note"></p>
     </div>
   </div>
 
   <div id="player-capture">
-    <p>Which do you use?</p>
+    <p id="player-question">Which do you use?</p>
     <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px;">
       <button class="option" onclick="setPlayer('youtube')" style="display:flex; flex-direction:column; align-items:center; gap:8px; justify-content:center; padding:16px 8px;">
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#FF0000"/><path d="M10 8l6 4-6 4V8z" fill="#fff"/></svg>
-        <span style="font-size:14px;">YouTube</span>
+        <span style="font-size:14px;" id="player-label-youtube">YouTube</span>
       </button>
       <button class="option" onclick="setPlayer('apple')" style="display:flex; flex-direction:column; align-items:center; gap:8px; justify-content:center; padding:16px 8px;">
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="amGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FA233B"/><stop offset="100%" stop-color="#FB5C74"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#amGrad)"/><path d="M16 6.3v8.4c0 .9-.6 1.6-1.6 1.8l-1 .2c-.9.2-1.8-.4-1.8-1.4 0-.8.6-1.4 1.4-1.6l1.5-.3V8.8l-5 1v6.6c0 .9-.6 1.6-1.6 1.8l-1 .2c-.9.2-1.8-.4-1.8-1.4 0-.8.6-1.4 1.4-1.6l1.5-.3V7.6c0-.5.3-.9.8-1L15 5.4c.6-.1 1 .3 1 .9z" fill="#fff"/></svg>
-        <span style="font-size:14px;">Apple Music</span>
+        <span style="font-size:14px;" id="player-label-apple">Apple Music</span>
       </button>
       <button class="option" onclick="setPlayer('spotify')" style="display:flex; flex-direction:column; align-items:center; gap:8px; justify-content:center; padding:16px 8px;">
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M6.5 9.8c3.2-1 7.3-.7 9.9.9" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none"/><path d="M6.9 12.7c2.7-.8 6.1-.6 8.3.8" stroke="#fff" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M7.3 15.5c2.2-.6 5-.5 6.8.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round" fill="none"/></svg>
-        <span style="font-size:14px;">Spotify</span>
+        <span style="font-size:14px;" id="player-label-spotify">Spotify</span>
       </button>
     </div>
   </div>
 
-  <p>This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
-  <p>Got a song you think should be in here? Drop it below and it'll come straight to me.</p>
-  <p class="tiny-note">It's anonymous &mdash; I only see the song name you type, nothing about who sent it.</p>
+  <p id="welcome-desc-1">This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
+  <p id="returning-greeting" style="display:none;"></p>
+  <p id="welcome-desc-2">Got a song you think should be in here? Drop it below and it'll come straight to me.</p>
+  <p class="tiny-note" id="anon-note">It's anonymous &mdash; I only see the song name you type, nothing about who sent it.</p>
   <div class="suggest-box">
     <input type="text" id="song-input" class="suggest-input" placeholder="Artist - Song title" />
-    <button class="suggest-btn" onclick="submitSuggestion()">Send suggestion</button>
+    <button class="suggest-btn" id="send-suggestion-btn" onclick="submitSuggestion()">Send suggestion</button>
     <p class="suggest-note" id="suggest-note"></p>
   </div>
-  <p class="tiny-note" style="margin-bottom: 20px;"><a href="#" onclick="goTo('step-suggestions'); return false;" style="color:inherit; text-decoration:underline;">See the last suggestions that made it in &rarr;</a></p>
-  <p class="tagline">Discover. Feel. Repeat.</p>
-  <button class="open-btn" onclick="goTo('step-intent')">Let's go</button>
+  <p class="tiny-note" id="see-suggestions-note" style="margin-bottom: 20px;"></p>
+  <p class="tagline" id="tagline-text">Discover. Feel. Repeat.</p>
+  <button class="open-btn" id="lets-go-btn" onclick="goTo('step-intent')">Let's go</button>
 
   <div class="welcome-footnotes">
     <p id="player-note" class="inline-note" style="display:none;"></p>
@@ -625,71 +702,71 @@
 
 <!-- STEP: RECENT SUGGESTIONS -->
 <div class="screen" id="step-suggestions">
-  <button class="back" onclick="goTo('step-welcome')">&larr; back</button>
-  <p class="kicker">Community picks</p>
-  <h1>Made it in recently</h1>
-  <p>Songs people suggested that got added to the pool. Just titles &mdash; who sent them stays private.</p>
+  <button class="back" id="suggestions-back-btn" onclick="goTo('step-welcome')">&larr; back</button>
+  <p class="kicker" id="suggestions-kicker">Community picks</p>
+  <h1 id="suggestions-h1">Made it in recently</h1>
+  <p id="suggestions-desc">Songs people suggested that got added to the pool. Just titles &mdash; who sent them stays private.</p>
   <div id="suggestions-list"></div>
 </div>
 
 <!-- STEP 0: INTENT -->
 <div class="screen" id="step-intent">
-  <p class="kicker">Scan complete</p>
+  <p class="kicker" id="intent-kicker">Scan complete</p>
   <h1 id="intent-h1">What are we picking for?</h1>
   <div class="grid single">
-    <button class="option" onclick="selectIntent('feel')"><span class="emoji">🎭</span>How are you feeling right now?</button>
-    <button class="option" onclick="selectIntent('want')"><span class="emoji">✨</span>How do you want to feel instead?</button>
-    <button class="option" onclick="goTo('step-describe')"><span class="emoji">📝</span>Tell me what's going on</button>
-    <button class="option" onclick="showSongOfMoment()"><span class="emoji">🎵</span>Song of the moment</button>
+    <button class="option" id="intent-btn-feel" onclick="selectIntent('feel')"><span class="emoji">🎭</span>How are you feeling right now?</button>
+    <button class="option" id="intent-btn-want" onclick="selectIntent('want')"><span class="emoji">✨</span>How do you want to feel instead?</button>
+    <button class="option" id="intent-btn-describe" onclick="goTo('step-describe')"><span class="emoji">📝</span>Tell me what's going on</button>
+    <button class="option" id="intent-btn-song" onclick="showSongOfMoment()"><span class="emoji">🎵</span>Song of the moment</button>
   </div>
 </div>
 
 <!-- STEP: DESCRIBE YOUR MOMENT -->
 <div class="screen" id="step-describe">
-  <button class="back" onclick="goTo('step-intent')">&larr; back</button>
-  <p class="kicker">Set the scene</p>
-  <h1>What's happening right now?</h1>
-  <p>A sentence is enough &mdash; "it's raining and I'm driving home," "pulling an all-nighter studying," whatever's true right now.</p>
+  <button class="back" id="describe-back-btn" onclick="goTo('step-intent')">&larr; back</button>
+  <p class="kicker" id="describe-kicker">Set the scene</p>
+  <h1 id="describe-h1">What's happening right now?</h1>
+  <p id="describe-desc">A sentence is enough &mdash; "it's raining and I'm driving home," "pulling an all-nighter studying," whatever's true right now.</p>
   <div class="suggest-box">
     <input type="text" id="describe-input" class="suggest-input" placeholder="e.g. it's raining and I'm driving home" />
-    <button class="suggest-btn" onclick="findSongForMoment()">Find my song</button>
+    <button class="suggest-btn" id="find-song-btn" onclick="findSongForMoment()">Find my song</button>
     <p class="suggest-note" id="describe-note"></p>
   </div>
 </div>
 
 <!-- STEP 1: MOOD -->
 <div class="screen" id="step-mood">
-  <button class="back" onclick="goTo('step-intent')">&larr; back</button>
-  <p class="kicker">Scan complete</p>
+  <button class="back" id="mood-back-btn" onclick="goTo('step-intent')">&larr; back</button>
+  <p class="kicker" id="mood-kicker">Scan complete</p>
   <h1 id="mood-h1">What's the vibe right now?</h1>
   <div class="grid moods" id="mood-grid"></div>
 </div>
 
 <!-- STEP 2: GENRE -->
 <div class="screen" id="step-genre">
-  <button class="back" onclick="goTo('step-mood')">&larr; back</button>
+  <button class="back" id="genre-back-btn" onclick="goTo('step-mood')">&larr; back</button>
   <div class="mood-pill"><span class="dot"></span><span id="mood-pill-label"></span></div>
-  <h1>Pick a genre</h1>
+  <h1 id="genre-h1">Pick a genre</h1>
   <div class="grid" id="genre-grid"></div>
 </div>
 
 <!-- STEP 3: REVEAL -->
 <div class="screen" id="reveal">
   <h1 id="reveal-title">Digging through the crates&hellip;</h1>
-  <p>One track, picked at random from the pool.</p>
+  <p id="reveal-desc">One track, picked at random from the pool.</p>
   <div class="reveal-visual">
     <div class="disc"></div>
     <div class="found-card" id="found-card">
-      <p class="label">Now playing</p>
+      <p class="label" id="now-playing-label">Now playing</p>
       <p class="track" id="found-track"></p>
       <p class="artist" id="found-artist"></p>
       <a class="open-btn" id="open-link" href="#" target="_blank" rel="noopener">Open on YouTube</a>
-      <button class="again-btn" onclick="goTo('step-intent')">Start over</button>
+      <button class="again-btn" id="start-over-btn" onclick="goTo('step-intent')">Start over</button>
     </div>
   </div>
 </div>
 
-<footer>discovery pool &middot; 462 tracks &middot; growing</footer>
+<footer id="footer-text">discovery pool &middot; 462 tracks &middot; growing</footer>
 
 <script>
   // ---- SONG DATABASE ----
@@ -1163,25 +1240,25 @@
   ];
 
   const MOODS = [
-    { id: "happy",     label: "Happy",     emoji: "\u2600\uFE0F", tint: "happy-tint",     color: "#F2B441", dim: "#4A3C1F" },
-    { id: "chill",     label: "Chill",     emoji: "\uD83C\uDF19", tint: "chill-tint",     color: "#4FA8B8", dim: "#1E3438" },
-    { id: "sad",       label: "Sad",       emoji: "\uD83C\uDF27\uFE0F", tint: "sad-tint",       color: "#6E8CB0", dim: "#24303D" },
-    { id: "hype",      label: "Hype",      emoji: "\uD83D\uDD25", tint: "hype-tint",      color: "#E85D4E", dim: "#3D211C" },
-    { id: "romantic",  label: "Romantic",  emoji: "\uD83D\uDC9E", tint: "romantic-tint",  color: "#E8899E", dim: "#3D2530" },
-    { id: "angry",     label: "Angry",     emoji: "\uD83D\uDCA2", tint: "angry-tint",     color: "#D64545", dim: "#3D1E1E" },
-    { id: "focused",   label: "Focused",   emoji: "\uD83C\uDFAF", tint: "focused-tint",   color: "#7FA98A", dim: "#223026" },
-    { id: "gym",       label: "Gym",       emoji: "\uD83D\uDCAA", tint: "gym-tint",       color: "#8BC34A", dim: "#233318" },
+    { id: "happy",     label: "Happy",     labelAr: "\u0633\u0639\u064a\u062f",     emoji: "\u2600\uFE0F", tint: "happy-tint",     color: "#F2B441", dim: "#4A3C1F" },
+    { id: "chill",     label: "Chill",     labelAr: "\u0647\u0627\u062f\u0626",     emoji: "\uD83C\uDF19", tint: "chill-tint",     color: "#4FA8B8", dim: "#1E3438" },
+    { id: "sad",       label: "Sad",       labelAr: "\u062d\u0632\u064a\u0646",     emoji: "\uD83C\uDF27\uFE0F", tint: "sad-tint",       color: "#6E8CB0", dim: "#24303D" },
+    { id: "hype",      label: "Hype",      labelAr: "\u062d\u0645\u0627\u0633",     emoji: "\uD83D\uDD25", tint: "hype-tint",      color: "#E85D4E", dim: "#3D211C" },
+    { id: "romantic",  label: "Romantic",  labelAr: "\u0631\u0648\u0645\u0627\u0646\u0633\u064a",  emoji: "\uD83D\uDC9E", tint: "romantic-tint",  color: "#E8899E", dim: "#3D2530" },
+    { id: "angry",     label: "Angry",     labelAr: "\u063a\u0627\u0636\u0628",     emoji: "\uD83D\uDCA2", tint: "angry-tint",     color: "#D64545", dim: "#3D1E1E" },
+    { id: "focused",   label: "Focused",   labelAr: "\u0645\u064f\u0631\u0643\u0651\u0632",   emoji: "\uD83C\uDFAF", tint: "focused-tint",   color: "#7FA98A", dim: "#223026" },
+    { id: "gym",       label: "Gym",       labelAr: "\u0631\u064a\u0627\u0636\u0629",       emoji: "\uD83D\uDCAA", tint: "gym-tint",       color: "#8BC34A", dim: "#233318" },
   ];
 
   const GENRES = [
-    { id: "pop", label: "Pop", emoji: "\uD83C\uDFA4" },
-    { id: "electronic", label: "Electronic", emoji: "\uD83C\uDFA7" },
-    { id: "indie", label: "Indie", emoji: "\uD83C\uDFB8" },
-    { id: "hiphop", label: "Hip-Hop", emoji: "\uD83C\uDFA4" },
-    { id: "rnb", label: "R&B/Soul", emoji: "\uD83D\uDC9C" },
-    { id: "rock", label: "Rock", emoji: "\uD83E\uDD41" },
-    { id: "metal", label: "Metal", emoji: "\uD83E\uDD18" },
-    { id: "soundtrack", label: "Game OST", emoji: "\uD83C\uDFAE" },
+    { id: "pop", label: "Pop", labelAr: "\u0628\u0648\u0628", emoji: "\uD83C\uDFA4" },
+    { id: "electronic", label: "Electronic", labelAr: "\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a\u0629", emoji: "\uD83C\uDFA7" },
+    { id: "indie", label: "Indie", labelAr: "\u0625\u0646\u062f\u064a", emoji: "\uD83C\uDFB8" },
+    { id: "hiphop", label: "Hip-Hop", labelAr: "\u0647\u064a\u0628\u0020\u0647\u0648\u0628", emoji: "\uD83C\uDFA4" },
+    { id: "rnb", label: "R&B/Soul", labelAr: "\u0622\u0631\u0020\u0623\u0646\u062f\u0020\u0628\u064a", emoji: "\uD83D\uDC9C" },
+    { id: "rock", label: "Rock", labelAr: "\u0631\u0648\u0643", emoji: "\uD83E\uDD41" },
+    { id: "metal", label: "Metal", labelAr: "\u0645\u064a\u062a\u0627\u0644", emoji: "\uD83E\uDD18" },
+    { id: "soundtrack", label: "Game OST", labelAr: "\u0645\u0648\u0633\u064a\u0642\u0649\u0020\u0623\u0644\u0639\u0627\u0628", emoji: "\uD83C\uDFAE" },
   ];
 
   // Songs that came in through the anonymous suggestion box and made it
@@ -1209,23 +1286,23 @@
     const note = document.getElementById('suggest-note');
     const song = input.value.trim();
     if (!song) {
-      note.textContent = "Type a song first \uD83D\uDE42";
+      note.textContent = t('send-empty') + ' \uD83D\uDE42';
       return;
     }
     if (SUGGESTION_ENDPOINT.indexOf('PASTE_YOUR') === 0) {
-      note.textContent = "Suggestions aren't hooked up yet \u2014 coming soon!";
+      note.textContent = t('send-not-ready');
       return;
     }
-    note.textContent = "Sending\u2026";
+    note.textContent = t('send-sending');
     fetch(SUGGESTION_ENDPOINT, {
       method: 'POST',
       mode: 'no-cors',
       body: new URLSearchParams({ song })
     }).then(() => {
-      note.textContent = "Sent \u2014 thank you!";
+      note.textContent = t('send-sent');
       input.value = '';
     }).catch(() => {
-      note.textContent = "Something went wrong \u2014 try again?";
+      note.textContent = t('send-error');
     });
   }
 
@@ -1237,7 +1314,231 @@
 
   function nameSuffix() {
     const name = getVisitorName();
-    return name ? `, ${name}` : '';
+    if (!name) return '';
+    return getLang() === 'ar' ? ` \u064a\u0627 ${name}` : `, ${name}`;
+  }
+
+  const STRINGS = {
+    en: {
+      "welcome-kicker": "You found it",
+      "name-question": "What should I call you?",
+      "name-input-ph": "Your name",
+      "name-btn": "That's me",
+      "skip-it-link": "skip it",
+      "name-note-lead": "Totally optional, and you can",
+      "name-note-tail": "It'll just say \"hey\" instead.",
+      "player-question": "Which do you use?",
+      "player-label-youtube": "YouTube",
+      "player-label-apple": "Apple Music",
+      "player-label-spotify": "Spotify",
+      "welcome-desc-1": "This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.",
+      "welcome-desc-2": "Got a song you think should be in here? Drop it below and it'll come straight to me.",
+      "anon-note": "It's anonymous \u2014 I only see the song name you type, nothing about who sent it.",
+      "song-input-ph": "Artist - Song title",
+      "send-suggestion-btn": "Send suggestion",
+      "see-suggestions-lead": "See",
+      "see-suggestions-link": "the last suggestions that made it in",
+      "tagline-text": "Discover. Feel. Repeat.",
+      "lets-go-btn": "Let's go",
+      "back-btn": "back",
+      "suggestions-kicker": "Community picks",
+      "suggestions-h1": "Made it in recently",
+      "suggestions-desc": "Songs people suggested that got added to the pool. Just titles \u2014 who sent them stays private.",
+      "suggestions-empty": "Nothing yet \u2014 be the first!",
+      "intent-kicker": "Scan complete",
+      "intent-btn-feel": "How are you feeling right now?",
+      "intent-btn-want": "How do you want to feel instead?",
+      "intent-btn-describe": "Tell me what's going on",
+      "intent-btn-song": "Song of the moment",
+      "describe-kicker": "Set the scene",
+      "describe-h1": "What's happening right now?",
+      "describe-desc": "A sentence is enough \u2014 \"it's raining and I'm driving home,\" \"pulling an all-nighter studying,\" whatever's true right now.",
+      "describe-input-ph": "e.g. it's raining and I'm driving home",
+      "find-song-btn": "Find my song",
+      "describe-empty-msg": "Type a little about what's going on first",
+      "mood-kicker": "Scan complete",
+      "mood-h1-feel": "What's the vibe right now?",
+      "mood-h1-want": "What vibe do you want instead?",
+      "genre-h1": "Pick a genre",
+      "reveal-desc": "One track, picked at random from the pool.",
+      "now-playing-label": "Now playing",
+      "start-over-btn": "Start over",
+      "digging-text": "Digging through the crates\u2026",
+      "found-one-text": "Found one",
+      "today-pick-text": "Today's pick",
+      "felt-like-text": "Felt like a",
+      "open-youtube-btn": "Open on YouTube",
+      "search-apple-btn": "Search on Apple Music",
+      "search-spotify-btn": "Search on Spotify",
+      "using-text": "Using",
+      "change-link": "change",
+      "not-text": "Not",
+      "reset-link": "Reset",
+      "send-sending": "Sending\u2026",
+      "send-sent": "Sent \u2014 thank you!",
+      "send-error": "Something went wrong \u2014 try again?",
+      "send-not-ready": "Suggestions aren't hooked up yet \u2014 coming soon!",
+      "send-empty": "Type a song first",
+      "footer-pool": "discovery pool",
+      "footer-tracks": "tracks",
+      "footer-growing": "growing",
+      "intent-h1-default": "What are we picking for?",
+      "welcome-heading-default": "Hey, welcome.",
+      "returning-greeting": "Good to have you back. Let's dig up something good.",
+    },
+    ar: {
+    "welcome-kicker": "\u0644\u0642\u062f \u0648\u062c\u062f\u062a\u0647\u0627",
+    "name-question": "\u0628\u0645\u0627\u0630\u0627 \u0623\u0646\u0627\u062f\u064a\u0643\u061f",
+    "name-input-ph": "\u0627\u0633\u0645\u0643",
+    "name-btn": "\u0647\u0630\u0627 \u0623\u0646\u0627",
+    "skip-it-link": "\u062a\u062e\u0637\u064a\u0647",
+    "name-note-lead": "\u0627\u062e\u062a\u064a\u0627\u0631\u064a \u062a\u0645\u0627\u0645\u064b\u0627\u060c \u0648\u064a\u0645\u0643\u0646\u0643",
+    "name-note-tail": "\u0633\u064a\u0642\u0648\u0644 \"\u0623\u0647\u0644\u0627\u064b\" \u0641\u0642\u0637 \u0628\u062f\u0644\u0627\u064b \u0645\u0646 \u0630\u0644\u0643.",
+    "player-question": "\u0623\u064a \u0645\u0646\u0647\u0627 \u062a\u0633\u062a\u062e\u062f\u0645\u061f",
+    "player-label-youtube": "\u064a\u0648\u062a\u064a\u0648\u0628",
+    "player-label-apple": "\u0623\u0628\u0644 \u0645\u064a\u0648\u0632\u064a\u0643",
+    "player-label-spotify": "\u0633\u0628\u0648\u062a\u064a\u0641\u0627\u064a",
+    "welcome-desc-1": "\u0647\u0630\u0647 \u0622\u0644\u0629 \u0635\u063a\u064a\u0631\u0629 \u0644\u0627\u0643\u062a\u0634\u0627\u0641 \u0627\u0644\u0623\u063a\u0627\u0646\u064a \u062d\u0633\u0628 \u0627\u0644\u0645\u0632\u0627\u062c. \u0623\u062e\u0628\u0631\u0647\u0627 \u0643\u064a\u0641 \u062a\u0634\u0639\u0631 (\u0623\u0648 \u0643\u064a\u0641 \u062a\u0631\u064a\u062f \u0623\u0646 \u062a\u0634\u0639\u0631)\u060c \u0627\u062e\u062a\u0631 \u0646\u0648\u0639\u064b\u0627 \u0645\u0648\u0633\u064a\u0642\u064a\u064b\u0627\u060c \u0648\u0633\u062a\u062c\u0644\u0628 \u0644\u0643 \u0623\u063a\u0646\u064a\u0629 \u0645\u0646 \u0645\u062c\u0645\u0648\u0639\u0629 \u062a\u0643\u0628\u0631 \u0628\u0627\u0633\u062a\u0645\u0631\u0627\u0631.",
+    "welcome-desc-2": "\u0644\u062f\u064a\u0643 \u0623\u063a\u0646\u064a\u0629 \u062a\u0639\u062a\u0642\u062f \u0623\u0646\u0647\u0627 \u064a\u062c\u0628 \u0623\u0646 \u062a\u0643\u0648\u0646 \u0647\u0646\u0627\u061f \u0623\u062f\u062e\u0644\u0647\u0627 \u0623\u062f\u0646\u0627\u0647 \u0648\u0633\u062a\u0635\u0644\u0646\u064a \u0645\u0628\u0627\u0634\u0631\u0629.",
+    "anon-note": "\u0627\u0644\u0623\u0645\u0631 \u0645\u062c\u0647\u0648\u0644 \u062a\u0645\u0627\u0645\u064b\u0627 \u2014 \u0644\u0646 \u0623\u0631\u0649 \u0633\u0648\u0649 \u0627\u0633\u0645 \u0627\u0644\u0623\u063a\u0646\u064a\u0629 \u0627\u0644\u062a\u064a \u062a\u0643\u062a\u0628\u0647\u0627\u060c \u0644\u0627 \u0634\u064a\u0621 \u0639\u0646 \u0647\u0648\u064a\u0629 \u0645\u0646 \u0623\u0631\u0633\u0644\u0647\u0627.",
+    "song-input-ph": "\u0627\u0644\u0641\u0646\u0627\u0646 - \u0627\u0633\u0645 \u0627\u0644\u0623\u063a\u0646\u064a\u0629",
+    "send-suggestion-btn": "\u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0627\u0642\u062a\u0631\u0627\u062d",
+    "see-suggestions-lead": "\u0634\u0627\u0647\u062f",
+    "see-suggestions-link": "\u0622\u062e\u0631 \u0627\u0644\u0627\u0642\u062a\u0631\u0627\u062d\u0627\u062a \u0627\u0644\u062a\u064a \u0623\u064f\u0636\u064a\u0641\u062a",
+    "tagline-text": "\u0627\u0643\u062a\u0634\u0641. \u0627\u0634\u0639\u0631. \u0643\u0631\u0631.",
+    "lets-go-btn": "\u0644\u0646\u0628\u062f\u0623",
+    "back-btn": "\u0631\u062c\u0648\u0639",
+    "suggestions-kicker": "\u0627\u062e\u062a\u064a\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u062c\u062a\u0645\u0639",
+    "suggestions-h1": "\u0623\u064f\u0636\u064a\u0641\u062a \u0645\u0624\u062e\u0631\u064b\u0627",
+    "suggestions-desc": "\u0623\u063a\u0627\u0646\u064d \u0627\u0642\u062a\u0631\u062d\u0647\u0627 \u0627\u0644\u0632\u0648\u0627\u0631 \u0648\u062a\u0645\u062a \u0625\u0636\u0627\u0641\u062a\u0647\u0627. \u0627\u0644\u0639\u0646\u0627\u0648\u064a\u0646 \u0641\u0642\u0637 \u2014 \u0647\u0648\u064a\u0629 \u0645\u0646 \u0627\u0642\u062a\u0631\u062d\u0647\u0627 \u062a\u0628\u0642\u0649 \u0633\u0631\u064a\u0629.",
+    "suggestions-empty": "\u0644\u0627 \u0634\u064a\u0621 \u0628\u0639\u062f \u2014 \u0643\u0646 \u0623\u0648\u0644 \u0645\u0646 \u064a\u0642\u062a\u0631\u062d!",
+    "intent-kicker": "\u0627\u0643\u062a\u0645\u0644 \u0627\u0644\u0645\u0633\u062d",
+    "intent-btn-feel": "\u0643\u064a\u0641 \u062a\u0634\u0639\u0631 \u0627\u0644\u0622\u0646\u061f",
+    "intent-btn-want": "\u0643\u064a\u0641 \u062a\u0631\u064a\u062f \u0623\u0646 \u062a\u0634\u0639\u0631 \u0628\u062f\u0644\u0627\u064b \u0645\u0646 \u0630\u0644\u0643\u061f",
+    "intent-btn-describe": "\u0623\u062e\u0628\u0631\u0646\u064a \u0628\u0645\u0627 \u064a\u062d\u062f\u062b",
+    "intent-btn-song": "\u0623\u063a\u0646\u064a\u0629 \u0627\u0644\u0644\u062d\u0638\u0629",
+    "describe-kicker": "\u0635\u0641 \u0627\u0644\u0623\u062c\u0648\u0627\u0621",
+    "describe-h1": "\u0645\u0627\u0630\u0627 \u064a\u062d\u062f\u062b \u0627\u0644\u0622\u0646\u061f",
+    "describe-desc": "\u062c\u0645\u0644\u0629 \u0648\u0627\u062d\u062f\u0629 \u062a\u0643\u0641\u064a \u2014 \"\u0625\u0646\u0647\u0627 \u062a\u0645\u0637\u0631 \u0648\u0623\u0646\u0627 \u0641\u064a \u0637\u0631\u064a\u0642\u064a \u0644\u0644\u0645\u0646\u0632\u0644\"\u060c \"\u0623\u0630\u0627\u0643\u0631 \u0637\u0648\u0627\u0644 \u0627\u0644\u0644\u064a\u0644\"\u060c \u0623\u064a \u0634\u064a\u0621 \u0635\u062d\u064a\u062d \u0627\u0644\u0622\u0646.",
+    "describe-input-ph": "\u0645\u062b\u0627\u0644: \u0625\u0646\u0647\u0627 \u062a\u0645\u0637\u0631 \u0648\u0623\u0646\u0627 \u0641\u064a \u0637\u0631\u064a\u0642\u064a \u0644\u0644\u0645\u0646\u0632\u0644",
+    "find-song-btn": "\u0627\u0628\u062d\u062b \u0639\u0646 \u0623\u063a\u0646\u064a\u062a\u064a",
+    "describe-empty-msg": "\u0627\u0643\u062a\u0628 \u0627\u0644\u0642\u0644\u064a\u0644 \u0639\u0645\u0651\u0627 \u064a\u062d\u062f\u062b \u0623\u0648\u0644\u0627\u064b",
+    "mood-kicker": "\u0627\u0643\u062a\u0645\u0644 \u0627\u0644\u0645\u0633\u062d",
+    "mood-h1-feel": "\u0645\u0627 \u0647\u0648 \u0634\u0639\u0648\u0631\u0643 \u0627\u0644\u0622\u0646\u061f",
+    "mood-h1-want": "\u0645\u0627 \u0627\u0644\u0634\u0639\u0648\u0631 \u0627\u0644\u0630\u064a \u062a\u0631\u064a\u062f\u0647 \u0628\u062f\u0644\u0627\u064b \u0645\u0646 \u0630\u0644\u0643\u061f",
+    "genre-h1": "\u0627\u062e\u062a\u0631 \u0646\u0648\u0639\u064b\u0627 \u0645\u0648\u0633\u064a\u0642\u064a\u064b\u0627",
+    "reveal-desc": "\u0623\u063a\u0646\u064a\u0629 \u0648\u0627\u062d\u062f\u0629\u060c \u0627\u062e\u062a\u064a\u0631\u062a \u0639\u0634\u0648\u0627\u0626\u064a\u064b\u0627 \u0645\u0646 \u0627\u0644\u0645\u062c\u0645\u0648\u0639\u0629.",
+    "now-playing-label": "\u064a\u064f\u0634\u063a\u064e\u0651\u0644 \u0627\u0644\u0622\u0646",
+    "start-over-btn": "\u0627\u0628\u062f\u0623 \u0645\u0646 \u062c\u062f\u064a\u062f",
+    "digging-text": "\u0623\u0628\u062d\u062b \u0628\u064a\u0646 \u0627\u0644\u0623\u063a\u0627\u0646\u064a\u2026",
+    "found-one-text": "\u0648\u062c\u062f\u062a \u0648\u0627\u062d\u062f\u0629",
+    "today-pick-text": "\u0627\u062e\u062a\u064a\u0627\u0631 \u0627\u0644\u064a\u0648\u0645",
+    "felt-like-text": "\u0634\u0639\u0631\u062a \u0648\u0643\u0623\u0646\u0647\u0627 \u0644\u062d\u0638\u0629",
+    "open-youtube-btn": "\u0627\u0641\u062a\u062d \u0639\u0644\u0649 \u064a\u0648\u062a\u064a\u0648\u0628",
+    "search-apple-btn": "\u0627\u0628\u062d\u062b \u0639\u0644\u0649 \u0623\u0628\u0644 \u0645\u064a\u0648\u0632\u064a\u0643",
+    "search-spotify-btn": "\u0627\u0628\u062d\u062b \u0639\u0644\u0649 \u0633\u0628\u0648\u062a\u064a\u0641\u0627\u064a",
+    "using-text": "\u062a\u0633\u062a\u062e\u062f\u0645",
+    "change-link": "\u062a\u063a\u064a\u064a\u0631",
+    "not-text": "\u0644\u0633\u062a",
+    "reset-link": "\u0625\u0639\u0627\u062f\u0629 \u062a\u0639\u064a\u064a\u0646",
+    "send-sending": "\u062c\u0627\u0631\u064d \u0627\u0644\u0625\u0631\u0633\u0627\u0644\u2026",
+    "send-sent": "\u062a\u0645 \u0627\u0644\u0625\u0631\u0633\u0627\u0644 \u2014 \u0634\u0643\u0631\u064b\u0627 \u0644\u0643!",
+    "send-error": "\u062d\u062f\u062b \u062e\u0637\u0623 \u0645\u0627 \u2014 \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649\u061f",
+    "send-not-ready": "\u0627\u0644\u0627\u0642\u062a\u0631\u0627\u062d\u0627\u062a \u063a\u064a\u0631 \u0645\u0641\u0639\u0651\u0644\u0629 \u0628\u0639\u062f \u2014 \u0642\u0631\u064a\u0628\u064b\u0627!",
+    "send-empty": "\u0627\u0643\u062a\u0628 \u0627\u0633\u0645 \u0623\u063a\u0646\u064a\u0629 \u0623\u0648\u0644\u0627\u064b",
+    "footer-pool": "\u0645\u062c\u0645\u0648\u0639\u0629 \u0627\u0644\u0627\u0643\u062a\u0634\u0627\u0641",
+    "footer-tracks": "\u0623\u063a\u0646\u064a\u0629",
+    "footer-growing": "\u0641\u064a \u062a\u0632\u0627\u064a\u062f",
+    "intent-h1-default": "\u0645\u0627 \u0627\u0644\u0630\u064a \u0646\u062e\u062a\u0627\u0631 \u0645\u0646 \u0623\u062c\u0644\u0647\u061f",
+    "welcome-heading-default": "\u0623\u0647\u0644\u0627\u064b\u060c \u0645\u0631\u062d\u0628\u0627\u064b \u0628\u0643.",
+    "returning-greeting": "\u0645\u0646 \u0627\u0644\u062c\u064a\u062f \u0639\u0648\u062f\u062a\u0643. \u0644\u0646\u0643\u062a\u0634\u0641 \u0634\u064a\u0626\u064b\u0627 \u0631\u0627\u0626\u0639\u064b\u0627.",
+    },
+  };
+
+  const LANG_KEY = 'moodMachineLang';
+
+  function getLang() {
+    return localStorage.getItem(LANG_KEY) || 'en';
+  }
+
+  function t(key) {
+    const lang = getLang();
+    return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS.en[key] || key;
+  }
+
+  function setLanguage(lang) {
+    localStorage.setItem(LANG_KEY, lang);
+    applyLanguage();
+  }
+
+  function applyLanguage() {
+    const lang = getLang();
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+
+    document.getElementById('lang-btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('lang-btn-ar').classList.toggle('active', lang === 'ar');
+
+    document.getElementById('welcome-kicker').textContent = t('welcome-kicker');
+    document.getElementById('name-question').textContent = t('name-question');
+    document.getElementById('name-input').placeholder = t('name-input-ph');
+    document.getElementById('name-btn').textContent = t('name-btn');
+    document.getElementById('player-question').textContent = t('player-question');
+    document.getElementById('player-label-youtube').textContent = t('player-label-youtube');
+    document.getElementById('player-label-apple').textContent = t('player-label-apple');
+    document.getElementById('player-label-spotify').textContent = t('player-label-spotify');
+    document.getElementById('welcome-desc-1').textContent = t('welcome-desc-1');
+    document.getElementById('welcome-desc-2').textContent = t('welcome-desc-2');
+    document.getElementById('anon-note').textContent = t('anon-note');
+    document.getElementById('song-input').placeholder = t('song-input-ph');
+    document.getElementById('send-suggestion-btn').textContent = t('send-suggestion-btn');
+    document.getElementById('see-suggestions-note').innerHTML =
+      `${t('see-suggestions-lead')} <a href="#" onclick="goTo('step-suggestions'); return false;" style="color:inherit; text-decoration:underline;">${t('see-suggestions-link')}</a>`;
+    document.getElementById('tagline-text').textContent = t('tagline-text');
+    document.getElementById('lets-go-btn').textContent = t('lets-go-btn');
+
+    const backArrow = lang === 'ar' ? '\u2192' : '\u2190';
+    document.getElementById('suggestions-back-btn').textContent = `${backArrow} ${t('back-btn')}`;
+    document.getElementById('describe-back-btn').textContent = `${backArrow} ${t('back-btn')}`;
+    document.getElementById('mood-back-btn').textContent = `${backArrow} ${t('back-btn')}`;
+    document.getElementById('genre-back-btn').textContent = `${backArrow} ${t('back-btn')}`;
+
+    document.getElementById('suggestions-kicker').textContent = t('suggestions-kicker');
+    document.getElementById('suggestions-h1').textContent = t('suggestions-h1');
+    document.getElementById('suggestions-desc').textContent = t('suggestions-desc');
+
+    document.getElementById('intent-kicker').textContent = t('intent-kicker');
+    document.getElementById('intent-btn-feel').innerHTML = `<span class="emoji">\uD83C\uDFAD</span>${t('intent-btn-feel')}`;
+    document.getElementById('intent-btn-want').innerHTML = `<span class="emoji">\u2728</span>${t('intent-btn-want')}`;
+    document.getElementById('intent-btn-describe').innerHTML = `<span class="emoji">\uD83D\uDCDD</span>${t('intent-btn-describe')}`;
+    document.getElementById('intent-btn-song').innerHTML = `<span class="emoji">\uD83C\uDFB5</span>${t('intent-btn-song')}`;
+
+    document.getElementById('describe-kicker').textContent = t('describe-kicker');
+    document.getElementById('describe-h1').textContent = t('describe-h1');
+    document.getElementById('describe-desc').textContent = t('describe-desc');
+    document.getElementById('describe-input').placeholder = t('describe-input-ph');
+    document.getElementById('find-song-btn').textContent = t('find-song-btn');
+
+    document.getElementById('mood-kicker').textContent = t('mood-kicker');
+    document.getElementById('genre-h1').textContent = t('genre-h1');
+    document.getElementById('reveal-desc').textContent = t('reveal-desc');
+    document.getElementById('now-playing-label').textContent = t('now-playing-label');
+    document.getElementById('start-over-btn').textContent = t('start-over-btn');
+
+    // Re-render language-dependent dynamic pieces
+    renderMoods();
+    renderGenres();
+    renderSuggestions();
+    initWelcome();
+    initPlayer();
+    updateFooterText();
+  }
+
+  function updateFooterText() {
+    const el = document.getElementById('footer-text');
+    if (!el) return;
+    const count = document.querySelectorAll('[data-track-count]').length || SONGS.length;
+    el.textContent = `${t('footer-pool')} \u00b7 ${SONGS.length} ${t('footer-tracks')} \u00b7 ${t('footer-growing')}`;
   }
 
   const QUOTES = [
@@ -1364,13 +1665,13 @@
     const pref = getPlayerPref();
     const capture = document.getElementById('player-capture');
     const note = document.getElementById('player-note');
-    const labels = { apple: 'Apple Music', spotify: 'Spotify', youtube: 'YouTube' };
-    const label = labels[pref] || 'YouTube';
+    const labelKeys = { apple: 'player-label-apple', spotify: 'player-label-spotify', youtube: 'player-label-youtube' };
+    const label = t(labelKeys[pref] || 'player-label-youtube');
 
     if (hasChosen) {
       capture.style.display = 'none';
       note.style.display = 'block';
-      note.innerHTML = `Using ${label} \u2014 <a href="#" onclick="changePlayer(); return false;" style="color:inherit;">change</a>`;
+      note.innerHTML = `${t('using-text')} ${label} \u2014 <a href="#" onclick="changePlayer(); return false;" style="color:inherit;">${t('change-link')}</a>`;
     } else {
       capture.style.display = 'block';
       note.style.display = 'none';
@@ -1384,12 +1685,12 @@
     const pref = getPlayerPref();
     const query = encodeURIComponent(`${song.artist} ${song.title}`);
     if (pref === 'apple') {
-      return { href: `https://music.apple.com/search?term=${query}`, label: 'Search on Apple Music' };
+      return { href: `https://music.apple.com/search?term=${query}`, label: t('search-apple-btn') };
     }
     if (pref === 'spotify') {
-      return { href: `https://open.spotify.com/search/${query}`, label: 'Search on Spotify' };
+      return { href: `https://open.spotify.com/search/${query}`, label: t('search-spotify-btn') };
     }
-    return { href: song.url, label: 'Open on YouTube' };
+    return { href: song.url, label: t('open-youtube-btn') };
   }
 
   function initWelcome() {
@@ -1398,23 +1699,37 @@
     if (quoteEl) {
       quoteEl.innerHTML = `\u201c${quote.text}\u201d <span class="quote-author">\u2014 ${quote.author}</span>`;
     }
+    const lang = getLang();
     const name = getVisitorName();
     const heading = document.getElementById('welcome-heading');
     const capture = document.getElementById('name-capture');
     const note = document.getElementById('returning-note');
+    const nameNote = document.getElementById('name-note');
     const intentH1 = document.getElementById('intent-h1');
+    const desc1 = document.getElementById('welcome-desc-1');
+    const returningGreeting = document.getElementById('returning-greeting');
+
+    nameNote.innerHTML = `${t('name-note-lead')} <a href="#" onclick="skipName(); return false;" style="color:inherit;">${t('skip-it-link')}</a>. ${t('name-note-tail')}`;
 
     if (name) {
-      heading.textContent = `Hey ${name}, welcome back.`;
+      heading.textContent = lang === 'ar' ? `\u0623\u0647\u0644\u0627\u064b ${name}\u060c \u0623\u0647\u0644\u0627\u064b \u0628\u0639\u0648\u062f\u062a\u0643.` : `Hey ${name}, welcome back.`;
       capture.style.display = 'none';
       note.style.display = 'block';
-      note.innerHTML = `<a href="#" onclick="resetVisitorName(); return false;" style="color:inherit;">Not ${name}? Reset</a>`;
-      intentH1.textContent = `What are we picking for, ${name}?`;
+      const resetText = lang === 'ar' ? `${t('not-text')} ${name}\u061f ${t('reset-link')}` : `${t('not-text')} ${name}? ${t('reset-link')}`;
+      note.innerHTML = `<a href="#" onclick="resetVisitorName(); return false;" style="color:inherit;">${resetText}</a>`;
+      intentH1.textContent = lang === 'ar' ? `\u0645\u0627 \u0627\u0644\u0630\u064a \u0646\u062e\u062a\u0627\u0631 \u0645\u0646 \u0623\u062c\u0644\u0647 \u064a\u0627 ${name}\u061f` : `What are we picking for, ${name}?`;
+      // Returning visitor \u2014 they already know what this is, so skip the
+      // pitch and greet them instead.
+      desc1.style.display = 'none';
+      returningGreeting.style.display = 'block';
+      returningGreeting.textContent = t('returning-greeting');
     } else {
-      heading.textContent = 'Hey, welcome.';
+      heading.textContent = t('welcome-heading-default');
       capture.style.display = 'block';
       note.style.display = 'none';
-      intentH1.textContent = 'What are we picking for?';
+      intentH1.textContent = t('intent-h1-default');
+      desc1.style.display = 'block';
+      returningGreeting.style.display = 'none';
     }
   }
 
@@ -1442,8 +1757,8 @@
   function selectIntent(intent) {
     chosenIntent = intent;
     document.getElementById('mood-h1').textContent = intent === 'feel'
-      ? `What's the vibe right now${nameSuffix()}?`
-      : `What vibe do you want instead${nameSuffix()}?`;
+      ? `${t('mood-h1-feel').replace(/[?\u061f]$/, '')}${nameSuffix()}${getLang() === 'ar' ? '\u061f' : '?'}`
+      : `${t('mood-h1-want').replace(/[?\u061f]$/, '')}${nameSuffix()}${getLang() === 'ar' ? '\u061f' : '?'}`;
     goTo('step-mood');
   }
 
@@ -1475,7 +1790,7 @@
     const note = document.getElementById('describe-note');
     const text = input.value.trim().toLowerCase();
     if (!text) {
-      note.textContent = "Type a little about what's going on first \uD83D\uDE42";
+      note.textContent = t('describe-empty-msg') + ' \uD83D\uDE42';
       return;
     }
 
@@ -1517,10 +1832,11 @@
 
     goTo('reveal');
     document.getElementById('found-card').classList.remove('show');
-    document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
+    document.getElementById('reveal-title').textContent = t('digging-text');
 
     setTimeout(() => {
-      document.getElementById('reveal-title').textContent = `Felt like a ${bestMood.label.toLowerCase()} moment${nameSuffix()}`;
+      const moodLabel = getLang() === 'ar' ? bestMood.labelAr : bestMood.label.toLowerCase();
+      document.getElementById('reveal-title').textContent = `${t('felt-like-text')} ${moodLabel}${nameSuffix()}`;
       document.getElementById('found-track').textContent = pick.title;
       document.getElementById('found-artist').textContent = pick.artist;
       const link = buildOpenLink(pick);
@@ -1542,10 +1858,10 @@
 
     goTo('reveal');
     document.getElementById('found-card').classList.remove('show');
-    document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
+    document.getElementById('reveal-title').textContent = t('digging-text');
 
     setTimeout(() => {
-      document.getElementById('reveal-title').textContent = `Today's pick${nameSuffix()}`;
+      document.getElementById('reveal-title').textContent = `${t('today-pick-text')}${nameSuffix()}`;
       document.getElementById('found-track').textContent = pick.title;
       document.getElementById('found-artist').textContent = pick.artist;
       const link = buildOpenLink(pick);
@@ -1560,7 +1876,7 @@
     const list = document.getElementById('suggestions-list');
     if (!list) return;
     if (RECENT_SUGGESTIONS.length === 0) {
-      list.innerHTML = '<p class="suggest-note">Nothing yet \u2014 be the first!</p>';
+      list.innerHTML = `<p class="suggest-note">${t('suggestions-empty')}</p>`;
       return;
     }
     list.innerHTML = RECENT_SUGGESTIONS.slice(0, 10).map(s =>
@@ -1571,10 +1887,11 @@
   function renderMoods() {
     const grid = document.getElementById('mood-grid');
     grid.innerHTML = '';
+    const lang = getLang();
     MOODS.forEach(m => {
       const btn = document.createElement('button');
       btn.className = `option ${m.tint}`;
-      btn.innerHTML = `<span class="emoji">${m.emoji}</span>${m.label}`;
+      btn.innerHTML = `<span class="emoji">${m.emoji}</span>${lang === 'ar' ? m.labelAr : m.label}`;
       btn.onclick = () => selectMood(m);
       grid.appendChild(btn);
     });
@@ -1584,18 +1901,20 @@
     chosenMood = mood;
     document.documentElement.style.setProperty('--accent', mood.color);
     document.documentElement.style.setProperty('--accent-dim', mood.dim);
-    document.getElementById('mood-pill-label').textContent = mood.label;
+    document.getElementById('mood-pill-label').textContent = getLang() === 'ar' ? mood.labelAr : mood.label;
     renderGenres();
     goTo('step-genre');
   }
 
   function renderGenres() {
     const grid = document.getElementById('genre-grid');
+    if (!chosenMood) return; // nothing to render yet \u2014 no mood picked
     grid.innerHTML = '';
+    const lang = getLang();
     GENRES.forEach(g => {
       const btn = document.createElement('button');
       btn.className = `option ${chosenMood.tint}`;
-      btn.innerHTML = `<span class="emoji">${g.emoji}</span>${g.label}`;
+      btn.innerHTML = `<span class="emoji">${g.emoji}</span>${lang === 'ar' ? g.labelAr : g.label}`;
       btn.onclick = () => selectGenre(g);
       grid.appendChild(btn);
     });
@@ -1612,10 +1931,10 @@
 
     goTo('reveal');
     document.getElementById('found-card').classList.remove('show');
-    document.getElementById('reveal-title').textContent = "Digging through the crates\u2026";
+    document.getElementById('reveal-title').textContent = t('digging-text');
 
     setTimeout(() => {
-      document.getElementById('reveal-title').textContent = `Found one${nameSuffix()}`;
+      document.getElementById('reveal-title').textContent = `${t('found-one-text')}${nameSuffix()}`;
       document.getElementById('found-track').textContent = pick.title;
       document.getElementById('found-artist').textContent = pick.artist;
       const link = buildOpenLink(pick);
@@ -1626,10 +1945,7 @@
     }, 1100);
   }
 
-  try { initWelcome(); } catch (e) { console.error('initWelcome failed:', e); }
-  try { initPlayer(); } catch (e) { console.error('initPlayer failed:', e); }
-  try { renderMoods(); } catch (e) { console.error('renderMoods failed:', e); }
-  try { renderSuggestions(); } catch (e) { console.error('renderSuggestions failed:', e); }
+  try { applyLanguage(); } catch (e) { console.error('applyLanguage failed:', e); }
 
   // Neon proximity glow: intensity grows the closer the pointer gets
   // to the button's center, works on dynamically-rendered buttons too.
