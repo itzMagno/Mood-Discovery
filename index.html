@@ -663,22 +663,6 @@
     </div>
   </div>
 
-  <div id="player-capture">
-    <p id="player-question">Which do you use?</p>
-    <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px;">
-      <button class="option" onclick="setPlayer('youtube')" style="display:flex; flex-direction:column; align-items:center; gap:8px; justify-content:center; padding:16px 8px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#FF0000"/><path d="M10 8l6 4-6 4V8z" fill="#fff"/></svg>
-        <span style="font-size:14px;" id="player-label-youtube">YouTube Music</span>
-      </button>
-      <button class="option" onclick="setPlayer('apple')" style="display:flex; flex-direction:column; align-items:center; gap:8px; justify-content:center; padding:16px 8px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="amGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FA233B"/><stop offset="100%" stop-color="#FB5C74"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#amGrad)"/><path d="M16 6.3v8.4c0 .9-.6 1.6-1.6 1.8l-1 .2c-.9.2-1.8-.4-1.8-1.4 0-.8.6-1.4 1.4-1.6l1.5-.3V8.8l-5 1v6.6c0 .9-.6 1.6-1.6 1.8l-1 .2c-.9.2-1.8-.4-1.8-1.4 0-.8.6-1.4 1.4-1.6l1.5-.3V7.6c0-.5.3-.9.8-1L15 5.4c.6-.1 1 .3 1 .9z" fill="#fff"/></svg>
-        <span style="font-size:14px;" id="player-label-apple">Apple Music</span>
-      </button>
-      <button class="option" onclick="setPlayer('spotify')" style="display:flex; flex-direction:column; align-items:center; gap:8px; justify-content:center; padding:16px 8px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M6.5 9.8c3.2-1 7.3-.7 9.9.9" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none"/><path d="M6.9 12.7c2.7-.8 6.1-.6 8.3.8" stroke="#fff" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M7.3 15.5c2.2-.6 5-.5 6.8.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round" fill="none"/></svg>
-        <span style="font-size:14px;" id="player-label-spotify">Spotify</span>
-      </button>
-    </div>
   </div>
 
   <p id="welcome-desc-1">This is a little mood-based song machine. Tell it how you're feeling (or how you want to feel), pick a genre, and it'll dig up a track for you from a pool that keeps growing.</p>
@@ -695,7 +679,6 @@
   <button class="open-btn" id="lets-go-btn" onclick="goTo('step-intent')">Let's go</button>
 
   <div class="welcome-footnotes">
-    <p id="player-note" class="inline-note" style="display:none;"></p>
     <p id="returning-note" class="inline-note" style="display:none;"></p>
   </div>
 </div>
@@ -760,13 +743,27 @@
       <p class="label" id="now-playing-label">Now playing</p>
       <p class="track" id="found-track"></p>
       <p class="artist" id="found-artist"></p>
-      <a class="open-btn" id="open-link" href="#">Open on YouTube</a>
+      <p class="tiny-note" id="pick-player-note" style="margin: 4px 0 10px;">Open with</p>
+      <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+        <button class="option" onclick="openIn('youtube')" style="display:flex; flex-direction:column; align-items:center; gap:6px; justify-content:center; padding:12px 6px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#FF0000"/><path d="M10 8l6 4-6 4V8z" fill="#fff"/></svg>
+          <span style="font-size:12px;" id="player-label-youtube">YouTube Music</span>
+        </button>
+        <button class="option" onclick="openIn('apple')" style="display:flex; flex-direction:column; align-items:center; gap:6px; justify-content:center; padding:12px 6px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="amGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FA233B"/><stop offset="100%" stop-color="#FB5C74"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#amGrad)"/><path d="M16 6.3v8.4c0 .9-.6 1.6-1.6 1.8l-1 .2c-.9.2-1.8-.4-1.8-1.4 0-.8.6-1.4 1.4-1.6l1.5-.3V8.8l-5 1v6.6c0 .9-.6 1.6-1.6 1.8l-1 .2c-.9.2-1.8-.4-1.8-1.4 0-.8.6-1.4 1.4-1.6l1.5-.3V7.6c0-.5.3-.9.8-1L15 5.4c.6-.1 1 .3 1 .9z" fill="#fff"/></svg>
+          <span style="font-size:12px;" id="player-label-apple">Apple Music</span>
+        </button>
+        <button class="option" onclick="openIn('spotify')" style="display:flex; flex-direction:column; align-items:center; gap:6px; justify-content:center; padding:12px 6px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M6.5 9.8c3.2-1 7.3-.7 9.9.9" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none"/><path d="M6.9 12.7c2.7-.8 6.1-.6 8.3.8" stroke="#fff" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M7.3 15.5c2.2-.6 5-.5 6.8.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round" fill="none"/></svg>
+          <span style="font-size:12px;" id="player-label-spotify">Spotify</span>
+        </button>
+      </div>
       <button class="again-btn" id="start-over-btn" onclick="goTo('step-intent')">Start over</button>
     </div>
   </div>
 </div>
 
-<footer id="footer-text">discovery pool &middot; 487 tracks &middot; growing</footer>
+<footer id="footer-text">discovery pool &middot; 500 tracks &middot; growing</footer>
 
 <script>
   // ---- SONG DATABASE ----
@@ -1035,6 +1032,19 @@
     { title: "Aggressive Evolution", artist: "Loathe", mood: ["angry"], genre: ["metal"], url: "https://www.youtube.com/watch?v=mGcb28aqJjo" },
     { title: "Halloweenie", artist: "Ashnikko", mood: ["angry"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=iqSt1ZS_Znw" },
     { title: "Champagne Coast", artist: "Blood Orange", mood: ["chill"], genre: ["rnb"], url: "https://www.youtube.com/watch?v=nO6y1-erVEw" },
+    { title: "Home", artist: "Edward Sharpe & The Magnetic Zeros", mood: ["happy"], genre: ["indie"], url: "https://www.youtube.com/watch?v=DHEOF_rcND8" },
+    { title: "Homesick (with Sam Fender)", artist: "Noah Kahan", mood: ["sad"], genre: ["pop"], url: "https://www.youtube.com/watch?v=Y8EPs0D7siE" },
+    { title: "Rivers and Roads", artist: "The Head and the Heart", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=RIlLZ3CAP8Y" },
+    { title: "Homecoming (feat. Chris Martin)", artist: "Kanye West", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=mbCdxbIbQpw" },
+    { title: "Seventeen Going Under", artist: "Sam Fender", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=WAifgn2Cvo8" },
+    { title: "My Hometown", artist: "Bruce Springsteen", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=77gKSp8WoRg" },
+    { title: "Flightless Bird, American Mouth", artist: "Iron & Wine", mood: ["romantic"], genre: ["indie"], url: "https://www.youtube.com/watch?v=RGVmhrfQqzg" },
+    { title: "Chicago", artist: "Sufjan Stevens", mood: ["focused"], genre: ["indie"], url: "https://www.youtube.com/watch?v=edpLqHYp4XY" },
+    { title: "I Will Wait", artist: "Mumford & Sons", mood: ["hype"], genre: ["rock"], url: "https://www.youtube.com/watch?v=rGKfrgqWcv0" },
+    { title: "I'll Follow You", artist: "Shinedown", mood: ["romantic"], genre: ["rock"], url: "https://www.youtube.com/watch?v=2IF5TfnmV0k" },
+    { title: "The Stable Song", artist: "Gregory Alan Isakov & Colorado Symphony", mood: ["chill"], genre: ["indie"], url: "https://www.youtube.com/watch?v=AqyAmmEkVvI" },
+    { title: "Comin' Home", artist: "City and Colour", mood: ["sad"], genre: ["indie"], url: "https://www.youtube.com/watch?v=NjMsWarn8BI" },
+    { title: "Long Way From Home", artist: "The Lumineers", mood: ["sad"], genre: ["rock"], url: "https://www.youtube.com/watch?v=9nVFoqjaoUU" },
     { title: "Glow Like Dat", artist: "Rich Brian", mood: ["happy"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=adDD43CvrUc" },
     { title: "Hair Down (feat. Kendrick Lamar)", artist: "SiR", mood: ["chill"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=BQqEMLOOMCo" },
     { title: "Topanga", artist: "Trippie Redd", mood: ["sad"], genre: ["hiphop"], url: "https://www.youtube.com/watch?v=qE4Z0KfzpE8" },
@@ -1352,7 +1362,7 @@
       "skip-it-link": "skip it",
       "name-note-lead": "Totally optional, and you can",
       "name-note-tail": "It'll just say \"hey\" instead.",
-      "player-question": "Which do you use?",
+      "pick-player-note": "Open with",
       "player-label-youtube": "YouTube Music",
       "player-label-apple": "Apple Music",
       "player-label-spotify": "Spotify",
@@ -1419,7 +1429,7 @@
     "skip-it-link": "\u062a\u062e\u0637\u064a\u0647",
     "name-note-lead": "\u0627\u062e\u062a\u064a\u0627\u0631\u064a \u062a\u0645\u0627\u0645\u064b\u0627\u060c \u0648\u064a\u0645\u0643\u0646\u0643",
     "name-note-tail": "\u0633\u064a\u0642\u0648\u0644 \"\u0623\u0647\u0644\u0627\u064b\" \u0641\u0642\u0637 \u0628\u062f\u0644\u0627\u064b \u0645\u0646 \u0630\u0644\u0643.",
-    "player-question": "\u0623\u064a \u0645\u0646\u0647\u0627 \u062a\u0633\u062a\u062e\u062f\u0645\u061f",
+    "pick-player-note": "\u0627\u0641\u062a\u062d \u0628\u0627\u0633\u062a\u062e\u062f\u0627\u0645",
     "player-label-youtube": "\u064a\u0648\u062a\u064a\u0648\u0628 \u0645\u064a\u0648\u0632\u064a\u0643",
     "player-label-apple": "\u0623\u0628\u0644 \u0645\u064a\u0648\u0632\u064a\u0643",
     "player-label-spotify": "\u0633\u0628\u0648\u062a\u064a\u0641\u0627\u064a",
@@ -1508,7 +1518,7 @@
     document.getElementById('name-question').textContent = t('name-question');
     document.getElementById('name-input').placeholder = t('name-input-ph');
     document.getElementById('name-btn').textContent = t('name-btn');
-    document.getElementById('player-question').textContent = t('player-question');
+    document.getElementById('pick-player-note').textContent = t('pick-player-note');
     document.getElementById('player-label-youtube').textContent = t('player-label-youtube');
     document.getElementById('player-label-apple').textContent = t('player-label-apple');
     document.getElementById('player-label-spotify').textContent = t('player-label-spotify');
@@ -1555,7 +1565,6 @@
     renderGenres();
     renderSuggestions();
     initWelcome();
-    initPlayer();
     updateFooterText();
   }
 
@@ -1669,52 +1678,29 @@
     { text: "Without music, life would be a blank to me.", author: "Jane Austen, Emma" },
   ];
 
-  const PLAYER_KEY = 'moodMachinePlayer';
+  // The song currently shown on the reveal card, so the three player
+  // buttons know what to open when clicked.
+  let currentPick = null;
 
-  function getPlayerPref() {
-    return localStorage.getItem(PLAYER_KEY) || 'youtube';
-  }
-
-  function setPlayer(choice) {
-    localStorage.setItem(PLAYER_KEY, choice);
-    initPlayer();
-  }
-
-  function changePlayer() {
-    localStorage.removeItem(PLAYER_KEY);
-    initPlayer();
-  }
-
-  function initPlayer() {
-    const hasChosen = !!localStorage.getItem(PLAYER_KEY);
-    const pref = getPlayerPref();
-    const capture = document.getElementById('player-capture');
-    const note = document.getElementById('player-note');
-    const labelKeys = { apple: 'player-label-apple', spotify: 'player-label-spotify', youtube: 'player-label-youtube' };
-    const label = t(labelKeys[pref] || 'player-label-youtube');
-
-    if (hasChosen) {
-      capture.style.display = 'none';
-      note.style.display = 'block';
-      note.innerHTML = `${t('using-text')} ${label} \u2014 <a href="#" onclick="changePlayer(); return false;" style="color:inherit;">${t('change-link')}</a>`;
-    } else {
-      capture.style.display = 'block';
-      note.style.display = 'none';
-    }
-  }
-
-  // Builds the right link + label for the reveal screen's open button,
-  // based on the visitor's player preference. Apple Music has no per-track
-  // ID in our data, so it links to a search for the exact title + artist.
-  function buildOpenLink(song) {
-    const pref = getPlayerPref();
+  // Opens the current pick in whichever platform the visitor taps, each
+  // time a song is revealed \u2014 no stored preference, just an in-the-moment
+  // choice. Apple Music and Spotify have no per-track ID in our data, so
+  // they link to a search for the exact title + artist instead of a direct
+  // track page.
+  function openIn(platform) {
+    if (!currentPick) return;
+    const song = currentPick;
     const query = encodeURIComponent(`${song.artist} ${song.title}`);
-    if (pref === 'apple') {
-      return { href: `https://music.apple.com/search?term=${query}`, label: t('search-apple-btn') };
+
+    if (platform === 'apple') {
+      window.location.href = `https://music.apple.com/search?term=${query}`;
+      return;
     }
-    if (pref === 'spotify') {
-      return { href: `https://open.spotify.com/search/${query}`, label: t('search-spotify-btn') };
+    if (platform === 'spotify') {
+      window.location.href = `https://open.spotify.com/search/${query}`;
+      return;
     }
+
     // YouTube Music mirrors the same video catalog for official music
     // uploads, so we can reuse the exact verified video ID and just swap
     // the domain \u2014 opens/plays in the YouTube Music app or site instead
@@ -1731,10 +1717,11 @@
       const path = videoIdMatch ? `watch?v=${videoIdMatch[1]}` : '';
       const fallback = encodeURIComponent(ytMusicUrl);
       const intentUrl = `intent://music.youtube.com/${path}#Intent;scheme=https;package=com.google.android.apps.youtube.music;S.browser_fallback_url=${fallback};end;`;
-      return { href: intentUrl, label: t('open-youtube-btn') };
+      window.location.href = intentUrl;
+      return;
     }
 
-    return { href: ytMusicUrl, label: t('open-youtube-btn') };
+    window.location.href = ytMusicUrl;
   }
 
   function initWelcome() {
@@ -1883,10 +1870,7 @@
       document.getElementById('reveal-title').textContent = `${t('felt-like-text')} ${moodLabel}${nameSuffix()}`;
       document.getElementById('found-track').textContent = pick.title;
       document.getElementById('found-artist').textContent = pick.artist;
-      const link = buildOpenLink(pick);
-      const linkEl = document.getElementById('open-link');
-      linkEl.href = link.href;
-      linkEl.textContent = link.label;
+      currentPick = pick;
       document.getElementById('found-card').classList.add('show');
     }, 1100);
   }
@@ -1908,10 +1892,7 @@
       document.getElementById('reveal-title').textContent = `${t('today-pick-text')}${nameSuffix()}`;
       document.getElementById('found-track').textContent = pick.title;
       document.getElementById('found-artist').textContent = pick.artist;
-      const link = buildOpenLink(pick);
-      const linkEl = document.getElementById('open-link');
-      linkEl.href = link.href;
-      linkEl.textContent = link.label;
+      currentPick = pick;
       document.getElementById('found-card').classList.add('show');
     }, 1100);
   }
@@ -1981,10 +1962,7 @@
       document.getElementById('reveal-title').textContent = `${t('found-one-text')}${nameSuffix()}`;
       document.getElementById('found-track').textContent = pick.title;
       document.getElementById('found-artist').textContent = pick.artist;
-      const link = buildOpenLink(pick);
-      const linkEl = document.getElementById('open-link');
-      linkEl.href = link.href;
-      linkEl.textContent = link.label;
+      currentPick = pick;
       document.getElementById('found-card').classList.add('show');
     }, 1100);
   }
